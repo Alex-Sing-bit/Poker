@@ -79,11 +79,9 @@ public class Program {
             winMain();
         }
         else {
-            CardBlock play = new CardBlock();
+            CardBlock play = new CardBlock(52, true, null);
             int i = 1;
-            Player p1 = new Player(play);
-            System.out.println(p1.getCards()[0].getCardWeight() + " " + p1.getCards()[0].getCardSuit());
-            System.out.println(p1.getCards()[1].getCardWeight() + " " + p1.getCards()[1].getCardSuit());
+            Player p = new Player(play);
             for (Card c : play.getCardBlock()) {
                 if (c.getCardStatus()) {
                     System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardWeight());

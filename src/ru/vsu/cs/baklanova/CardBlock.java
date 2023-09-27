@@ -1,21 +1,28 @@
 package ru.vsu.cs.baklanova;
 
-import java.util.function.Function;
-
 public class CardBlock {
-    private final int CARD_NUMBER = 52;
+    private int cardNumber;
     private final int CARD_WEIGHTS_NUM = 14;
-    private final String[] CARD_SUIT = new String[]{"club", "diamond", "heart", "spade"};
+    private final String[] CARD_SUIT = new String[]{"крести", "бубна", "черва", "пика"};
+    //private final String[] CARD_SUIT = new String[]{"club", "diamond", "heart", "spade"};
     private Card[] cardBlock;
 
-    public CardBlock() {
-        this.cardBlock = createMainCardBlock();
+    private boolean isMainBlock;
+
+    public CardBlock(int cardNumber, boolean isMainBlock, CardBlock main) {
+        this.isMainBlock = isMainBlock;
+        this.cardNumber = cardNumber;
+        if (isMainBlock) {
+            this.cardBlock = createMainCardBlock();
+        } else {
+            this.cardBlock = createCardBlock(main);
+        }
     }
 
     public Card[] createMainCardBlock() {
-        Card[] cardBlock = new Card[CARD_NUMBER];
+        Card[] cardBlock = new Card[cardNumber];
         int k = 0;
-        for (int i = 0; i < CARD_NUMBER; i += CARD_SUIT.length) {
+        for (int i = 0; i < cardNumber; i += CARD_SUIT.length) {
             for (String j : CARD_SUIT) {
                 cardBlock[i + k] = new Card(j, CARD_WEIGHTS_NUM - i/4, true);
                 k++;
@@ -26,12 +33,35 @@ public class CardBlock {
         return cardBlock;
     }
 
+    private Card[] createCardBlock(CardBlock c) {
+        Card[] cards1 = new Card[cardNumber];
+        cards1[0] = randomCart(c);
+        cards1[1] = randomCart(c);
+        return cards1;
+    }
+
+    private Card randomCart(CardBlock cb) {
+        int num = cb.getCardBlock().length;
+        int k = (int) (num * Math.random());
+        for (int i = 0; i < num; i++) {
+            if (cb.getCardBlock()[k].getCardStatus()) {
+                cb.getCardBlock()[k].setCardStatus(false);
+                return cb.getCardBlock()[k];
+            } else {
+                k++;
+                k = k % num;
+            }
+        }
+
+        return null; //Ошибка
+    }
+
     public Card[] getCardBlock() {
         return cardBlock;
     }
 
-    public int getCARD_NUMBER() {
-        return CARD_NUMBER;
+    public int getCardNumber() {
+        return cardNumber;
     }
 
     public String[] getCARD_SUIT() {

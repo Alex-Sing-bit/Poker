@@ -3,7 +3,6 @@ package ru.vsu.cs.baklanova;
 public class Card {
     private String cardSuit;
     private int cardWeight;
-
     private boolean cardStatus;
 
     public Card(String cardSuit, int cardWeight, boolean bol) {
