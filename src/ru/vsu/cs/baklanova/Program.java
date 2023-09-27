@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class Program {
 
     public static class CmdParams {
-        public String inputFile;
-        public String outputFile;
+        //public String inputFile;
+        //public String outputFile;
         public boolean window;
         public boolean first;
         public boolean error;
@@ -38,15 +38,16 @@ public class Program {
             if (args[0].equals("-first")) {
                 params.first = true;
             }
-            if (args.length < 2) {
+            if (args.length > 1) {
                 params.help = true;
                 params.error = true;
                 return params;
             }
+            /*
             params.inputFile = args[1];
             if (args.length > 2) {
                 params.outputFile = args[2];
-            }
+            }*/
         } else {
             params.help = true;
             params.error = true;
@@ -78,10 +79,17 @@ public class Program {
             winMain();
         }
         else {
-
-            PrintStream out = (params.outputFile != null) ? new PrintStream(params.outputFile) : System.out;
-            out.print('8');
-            out.close();
+            CardBlock play = new CardBlock();
+            int i = 1;
+            for (CardBlock.Card c : play.getCardBlock()) {
+                if (c.getCardStatus()) {
+                    System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardWeight());
+                } else {
+                    System.out.println(i);
+                }
+                i++;
+            }
+            System.out.close();
         }
     }
 }
