@@ -1,52 +1,18 @@
 package ru.vsu.cs.baklanova;
 
+import java.util.function.Function;
+
 public class CardBlock {
     private final int CARD_NUMBER = 52;
     private final int CARD_WEIGHTS_NUM = 14;
     private final String[] CARD_SUIT = new String[]{"club", "diamond", "heart", "spade"};
     private Card[] cardBlock;
 
-    public class Card {
-        private String cardSuit;
-        private int cardWeight;
-
-        private boolean cardStatus;
-
-        public Card(String cardSuit, int cardWeight, boolean bol) {
-            this.cardSuit = cardSuit;
-            setCardWeight(cardWeight);
-            this.cardStatus = bol;
-        }
-
-        public void setCardWeight(int cardWeight) {
-            if (cardWeight > 0) {
-                this.cardWeight = cardWeight;
-            }
-            //Иначе ошибка
-        }
-
-        public int getCardWeight() {
-            return cardWeight;
-        }
-
-        public String getCardSuit() {
-            return cardSuit;
-        }
-
-        public boolean getCardStatus() {
-            return cardStatus;
-        }
-
-        public void setCardStatus(boolean cardStatus) {
-            this.cardStatus = cardStatus;
-        }
-    }
-
     public CardBlock() {
-        this.cardBlock = createCardBlock();
+        this.cardBlock = createMainCardBlock();
     }
 
-    public Card[] createCardBlock() {
+    public Card[] createMainCardBlock() {
         Card[] cardBlock = new Card[CARD_NUMBER];
         int k = 0;
         for (int i = 0; i < CARD_NUMBER; i += CARD_SUIT.length) {

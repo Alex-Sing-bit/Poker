@@ -81,7 +81,10 @@ public class Program {
         else {
             CardBlock play = new CardBlock();
             int i = 1;
-            for (CardBlock.Card c : play.getCardBlock()) {
+            Player p1 = new Player(play);
+            System.out.println(p1.getCards()[0].getCardWeight() + " " + p1.getCards()[0].getCardSuit());
+            System.out.println(p1.getCards()[1].getCardWeight() + " " + p1.getCards()[1].getCardSuit());
+            for (Card c : play.getCardBlock()) {
                 if (c.getCardStatus()) {
                     System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardWeight());
                 } else {
