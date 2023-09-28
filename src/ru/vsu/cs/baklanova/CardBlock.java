@@ -6,8 +6,8 @@ import java.util.Collections;
 public class CardBlock {
     private int cardNumber;
     private final int CARD_VALUES_NUM = 14;
-    private final String[] CARD_SUIT = new String[]{"крести", "бубна", "черва", "пика"};
-    //private final String[] CARD_SUIT = new String[]{"club", "diamond", "heart", "spade"};
+    //private final String[] CARD_SUIT = new String[]{"крести", "бубна", "черва", "пика"};
+    private final int[] CARD_SUIT = new int[]{1, 2, 3, 4};
     private Card[] cardBlock;
 
     private boolean isMainBlock;
@@ -26,7 +26,7 @@ public class CardBlock {
         Card[] cardBlock = new Card[cardNumber];
         int k = 0;
         for (int i = 0; i < cardNumber; i += CARD_SUIT.length) {
-            for (String j : CARD_SUIT) {
+            for (int j : CARD_SUIT) {
                 cardBlock[i + k] = new Card(j, CARD_VALUES_NUM - i/4, true);
                 k++;
             }
@@ -76,10 +76,13 @@ public class CardBlock {
         return cardNumber;
     }
 
-    public String[] getCARD_SUIT() {
+    public int[] getCARD_SUIT() {
         return CARD_SUIT;
     }
 
+    public int getCARD_VALUES_NUM() {
+        return CARD_VALUES_NUM;
+    }
 }
 //Карта как отдельный элемент хранит масть, значение, изображение
 //Колода хранит 36 карт и их состояние
