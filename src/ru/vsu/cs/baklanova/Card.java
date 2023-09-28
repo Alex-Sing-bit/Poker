@@ -1,25 +1,26 @@
 package ru.vsu.cs.baklanova;
 
-public class Card {
+public class Card implements Comparable <Card> {
     private String cardSuit;
-    private int cardWeight;
+    private int cardValue;
     private boolean cardStatus;
 
-    public Card(String cardSuit, int cardWeight, boolean bol) {
+
+    public Card(String cardSuit, int cardValue, boolean bol) throws Exception {
         this.cardSuit = cardSuit;
-        setCardWeight(cardWeight);
+        setCardValue(cardValue);
         this.cardStatus = bol;
     }
 
-    public void setCardWeight(int cardWeight) {
-        if (cardWeight > 0) {
-            this.cardWeight = cardWeight;
+    public void setCardValue(int cardValue) throws Exception{
+        if (cardValue > 0) {
+            this.cardValue = cardValue;
         }
-        //Иначе ошибка
+        throw new Exception("");
     }
 
-    public int getCardWeight() {
-        return cardWeight;
+    public int getCardValue() {
+        return cardValue;
     }
 
     public String getCardSuit() {
@@ -32,5 +33,15 @@ public class Card {
 
     public void setCardStatus(boolean cardStatus) {
         this.cardStatus = cardStatus;
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        if (this.cardValue > o.getCardValue()) {
+            return 1;
+        } else if (this.cardValue < o.getCardValue()) {
+            return  -1;
+        }
+        return 0;
     }
 }

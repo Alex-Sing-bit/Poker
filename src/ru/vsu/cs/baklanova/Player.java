@@ -8,9 +8,9 @@ public class Player {
     private final int cardsNumber = 2;
     private CardBlock cards;
 
-    private String setOfCardsStatus; //Массив статусов
+    private int сardsStatus;
 
-    public Player(CardBlock c) {
+    public Player(CardBlock c) throws Exception {
         setName();
         this.money = 10000;
         this.bet = 100;

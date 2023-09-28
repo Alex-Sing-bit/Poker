@@ -1,15 +1,7 @@
 package ru.vsu.cs.baklanova;
 
-import javax.swing.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 
 
 public class Program {
@@ -84,7 +76,7 @@ public class Program {
             Player p = new Player(play);
             for (Card c : play.getCardBlock()) {
                 if (c.getCardStatus()) {
-                    System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardWeight());
+                    System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardValue());
                 } else {
                     System.out.println(i);
                 }

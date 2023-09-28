@@ -9,7 +9,7 @@ public class CardBlock {
 
     private boolean isMainBlock;
 
-    public CardBlock(int cardNumber, boolean isMainBlock, CardBlock main) {
+    public CardBlock(int cardNumber, boolean isMainBlock, CardBlock main) throws Exception {
         this.isMainBlock = isMainBlock;
         this.cardNumber = cardNumber;
         if (isMainBlock) {
@@ -19,7 +19,7 @@ public class CardBlock {
         }
     }
 
-    public Card[] createMainCardBlock() {
+    public Card[] createMainCardBlock() throws Exception {
         Card[] cardBlock = new Card[cardNumber];
         int k = 0;
         for (int i = 0; i < cardNumber; i += CARD_SUIT.length) {
@@ -33,14 +33,14 @@ public class CardBlock {
         return cardBlock;
     }
 
-    private Card[] createCardBlock(CardBlock c) {
+    private Card[] createCardBlock(CardBlock c) throws Exception {
         Card[] cards1 = new Card[cardNumber];
         cards1[0] = randomCart(c);
         cards1[1] = randomCart(c);
         return cards1;
     }
 
-    private Card randomCart(CardBlock cb) {
+    private Card randomCart(CardBlock cb) throws Exception{
         int num = cb.getCardBlock().length;
         int k = (int) (num * Math.random());
         for (int i = 0; i < num; i++) {
@@ -53,7 +53,7 @@ public class CardBlock {
             }
         }
 
-        return null; //Ошибка
+        throw new Exception("В колоде закончились карты");
     }
 
     public Card[] getCardBlock() {
@@ -67,6 +67,8 @@ public class CardBlock {
     public String[] getCARD_SUIT() {
         return CARD_SUIT;
     }
+
+
 }
 //Карта как отдельный элемент хранит масть, значение, изображение
 //Колода хранит 36 карт и их состояние
