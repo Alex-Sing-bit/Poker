@@ -1,7 +1,7 @@
 package ru.vsu.cs.baklanova;
 
 public class Card implements Comparable <Card> {
-    private String cardSuit;
+    private final String cardSuit;
     private int cardValue;
     private boolean cardStatus;
 
@@ -15,8 +15,9 @@ public class Card implements Comparable <Card> {
     public void setCardValue(int cardValue) throws Exception{
         if (cardValue > 0) {
             this.cardValue = cardValue;
+            return;
         }
-        throw new Exception("");
+        throw new Exception("Передано неправильное значение карты");
     }
 
     public int getCardValue() {

@@ -74,6 +74,11 @@ public class Program {
             CardBlock play = new CardBlock(52, true, null);
             int i = 1;
             Player p = new Player(play);
+
+            CardBlock example = new CardBlock(4, false, play);
+
+            CardSetStatus.setStatus(example.getCardBlock(), p.getCardBlock());
+
             for (Card c : play.getCardBlock()) {
                 if (c.getCardStatus()) {
                     System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardValue());

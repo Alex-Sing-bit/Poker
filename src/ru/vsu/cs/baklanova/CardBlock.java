@@ -1,8 +1,11 @@
 package ru.vsu.cs.baklanova;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 public class CardBlock {
     private int cardNumber;
-    private final int CARD_WEIGHTS_NUM = 14;
+    private final int CARD_VALUES_NUM = 14;
     private final String[] CARD_SUIT = new String[]{"крести", "бубна", "черва", "пика"};
     //private final String[] CARD_SUIT = new String[]{"club", "diamond", "heart", "spade"};
     private Card[] cardBlock;
@@ -24,7 +27,7 @@ public class CardBlock {
         int k = 0;
         for (int i = 0; i < cardNumber; i += CARD_SUIT.length) {
             for (String j : CARD_SUIT) {
-                cardBlock[i + k] = new Card(j, CARD_WEIGHTS_NUM - i/4, true);
+                cardBlock[i + k] = new Card(j, CARD_VALUES_NUM - i/4, true);
                 k++;
             }
             if (k > 3) k = 0;
@@ -35,8 +38,9 @@ public class CardBlock {
 
     private Card[] createCardBlock(CardBlock c) throws Exception {
         Card[] cards1 = new Card[cardNumber];
-        cards1[0] = randomCart(c);
-        cards1[1] = randomCart(c);
+        for (int i = 0; i < cardNumber; i++) {
+            cards1[i] = randomCart(c);
+        }
         return cards1;
     }
 
@@ -56,6 +60,14 @@ public class CardBlock {
         throw new Exception("В колоде закончились карты");
     }
 
+    public void cardSort() {
+        Arrays.sort(cardBlock, Collections.reverseOrder());
+    }
+
+    public static void cardSort(Card[] cardBlock) {
+        Arrays.sort(cardBlock, Collections.reverseOrder());
+    }
+
     public Card[] getCardBlock() {
         return cardBlock;
     }
@@ -67,7 +79,6 @@ public class CardBlock {
     public String[] getCARD_SUIT() {
         return CARD_SUIT;
     }
-
 
 }
 //Карта как отдельный элемент хранит масть, значение, изображение

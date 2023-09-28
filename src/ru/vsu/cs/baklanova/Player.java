@@ -21,8 +21,8 @@ public class Player {
         this.name = names[(int) (Math.random()* names.length)];
     }
 
-    public CardBlock getCards() {
-        return cards;
+    public Card[] getCardBlock() {
+        return cards.getCardBlock();
     }
 
     public String getName() {
