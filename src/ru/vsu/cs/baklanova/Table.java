@@ -7,7 +7,7 @@ public class Table {
     private CardBlock tableCards;
 
     public Table(int playersNum, CardBlock main) throws Exception {
-        setPlayers(main, playersNum, playersNum - 1);
+        setPlayers(main, playersNum, playersNum - 0); // -1
         tableCards = new CardBlock(0, false, main);
     }
 

@@ -23,4 +23,8 @@ public enum CardStatusEnum {
     public String getRusStringName(){
         return rusStringName;
     }
+
+    public int getCount() {
+        return count;
+    }
 }
