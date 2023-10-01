@@ -12,7 +12,8 @@ public class Player {
     private CardBlock cards;
 
     private boolean isInGame;
-    private CardStatusEnum сardsStatus;
+
+    private CardStatusEnum cardsStatus;
 
     public Player(CardBlock c, boolean isNPC) throws Exception {
         setName();
@@ -20,6 +21,7 @@ public class Player {
         this.money = 10000;
         this.bet = 100;
         this.isInGame = true;
+        this.cardsStatus = null;
         cards = new CardBlock(cardsNumber, false, c);
     }
 
@@ -36,13 +38,14 @@ public class Player {
         this.name = arr[(int) (Math.random()* arr.length)].name();
     }
 
-    public void setСardsStatus(CardStatusEnum сardsStatus) {
-        this.сardsStatus = сardsStatus;
+    public void setCardsStatus(CardStatusEnum cardsStatus) {
+        this.cardsStatus = cardsStatus;
     }
 
     public void setInGame(boolean inGame) {
         isInGame = inGame;
     }
+
 
     public CardBlock getCardBlock() {
         return cards;
@@ -51,8 +54,8 @@ public class Player {
         return cards.getCardBlock();
     }
 
-    public CardStatusEnum getСardsStatus() {
-        return сardsStatus;
+    public CardStatusEnum getCardsStatus() {
+        return cardsStatus;
     }
 
     public String getName() {
@@ -65,5 +68,13 @@ public class Player {
 
     public int getMoney() {
         return money;
+    }
+
+    public boolean getIsNPC() {
+        return isNPC;
+    }
+
+    public boolean getInGame() {
+        return isInGame;
     }
 }

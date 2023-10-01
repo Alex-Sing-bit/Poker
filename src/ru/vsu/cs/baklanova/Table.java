@@ -6,12 +6,31 @@ public class Table {
     private ArrayList<Player> players;
     private CardBlock tableCards;
 
-    public Table(int playersNum, int npcNum, CardBlock main) throws Exception {
-        if (npcNum > playersNum) {
-            npcNum = playersNum;
-        }
-        setPlayers(main, playersNum, npcNum);
+    public Table(int playersNum, CardBlock main) throws Exception {
+        setPlayers(main, playersNum, playersNum - 1);
         tableCards = new CardBlock(0, false, main);
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public CardBlock getTableCards() {
+        return tableCards;
+    }
+
+    public void setPlayersToNewCircle() {
+        for (Player p : players) {
+            p.setInGame(true);
+        }
+    }
+    public boolean gameOver() {
+        for (Player p : players) {
+            if (p.getMoney() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void setPlayers(CardBlock main, int playersNum, int npcNum) throws Exception {
