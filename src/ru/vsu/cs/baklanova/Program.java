@@ -77,7 +77,7 @@ public class Program {
 
             CardBlock example = new CardBlock(4, false, play);
 
-            CardSetStatus.setStatus(example.getCardBlock(), p.getCardBlock());
+            CardSetStatus.setStatus(example, p.getCardBlock());
 
             for (Card c : play.getCardBlock()) {
                 if (c.getCardStatus()) {

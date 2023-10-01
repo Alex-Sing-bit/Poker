@@ -1,7 +1,9 @@
 package ru.vsu.cs.baklanova;
 
+import java.util.ArrayList;
+
 public class Player {
-    private String[] names = new String[]{"Sasha", "Alex", "Sam", "Betty", "Paul", "Katty", "Mari"};
+    //private String[] names = new String[]{"Sasha", "Alex", "Sam", "Betty", "Paul", "Katty", "Mari"};
     private String name;
     private int money;
     private int bet;
@@ -18,10 +20,14 @@ public class Player {
     }
 
     public void setName() {
-        this.name = names[(int) (Math.random()* names.length)];
+        PlayerEnum[] arr = PlayerEnum.values();
+        this.name = arr[(int) (Math.random()* arr.length)].name();
     }
 
-    public Card[] getCardBlock() {
+    public CardBlock getCardBlock() {
+        return cards;
+    }
+    public ArrayList<Card> getCards() {
         return cards.getCardBlock();
     }
 

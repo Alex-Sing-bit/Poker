@@ -1,12 +1,12 @@
 package ru.vsu.cs.baklanova;
 
 public class Card implements Comparable <Card> {
-    private final int cardSuit;
+    private final CardSuitEnum cardSuit;
     private int cardValue;
     private boolean cardStatus;
 
 
-    public Card(int cardSuit, int cardValue, boolean bol) throws Exception {
+    public Card(CardSuitEnum cardSuit, int cardValue, boolean bol) throws Exception {
         this.cardSuit = cardSuit;
         setCardValue(cardValue);
         this.cardStatus = bol;
@@ -24,7 +24,7 @@ public class Card implements Comparable <Card> {
         return cardValue;
     }
 
-    public int getCardSuit() {
+    public CardSuitEnum getCardSuit() {
         return cardSuit;
     }
 

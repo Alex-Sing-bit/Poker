@@ -1,14 +1,14 @@
 package ru.vsu.cs.baklanova;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 public class CardBlock {
     private int cardNumber;
     private final int CARD_VALUES_NUM = 14;
-    //private final String[] CARD_SUIT = new String[]{"крести", "бубна", "черва", "пика"};
-    private final int[] CARD_SUIT = new int[]{1, 2, 3, 4};
-    private Card[] cardBlock;
+
+    private ArrayList<Card> cardBlock;
 
     private boolean isMainBlock;
 
@@ -22,12 +22,13 @@ public class CardBlock {
         }
     }
 
-    public Card[] createMainCardBlock() throws Exception {
-        Card[] cardBlock = new Card[cardNumber];
+    public ArrayList<Card> createMainCardBlock() throws Exception {
+        ArrayList<Card> cardBlock = new ArrayList<>();
         int k = 0;
-        for (int i = 0; i < cardNumber; i += CARD_SUIT.length) {
-            for (int j : CARD_SUIT) {
-                cardBlock[i + k] = new Card(j, CARD_VALUES_NUM - i/4, true);
+        int size = CardSuitEnum.values().length;
+        for (int i = 0; i < cardNumber; i += size) {
+            for (CardSuitEnum j : CardSuitEnum.values()) {
+                cardBlock.add(k + i, new Card(j, CARD_VALUES_NUM - i/4, true));
                 k++;
             }
             if (k > 3) k = 0;
@@ -36,21 +37,21 @@ public class CardBlock {
         return cardBlock;
     }
 
-    private Card[] createCardBlock(CardBlock c) throws Exception {
-        Card[] cards1 = new Card[cardNumber];
+    private ArrayList<Card> createCardBlock(CardBlock c) throws Exception {
+        ArrayList<Card> cards1 = new ArrayList<>();
         for (int i = 0; i < cardNumber; i++) {
-            cards1[i] = randomCart(c);
+            cards1.add(randomCart(c));
         }
         return cards1;
     }
 
     private Card randomCart(CardBlock cb) throws Exception{
-        int num = cb.getCardBlock().length;
+        int num = cb.getCardBlock().size();
         int k = (int) (num * Math.random());
         for (int i = 0; i < num; i++) {
-            if (cb.getCardBlock()[k].getCardStatus()) {
-                cb.getCardBlock()[k].setCardStatus(false);
-                return cb.getCardBlock()[k];
+            if (cb.getCardBlock().get(k).getCardStatus()) {
+                cb.getCardBlock().get(k).setCardStatus(false);
+                return cb.getCardBlock().get(k);
             } else {
                 k++;
                 k = k % num;
@@ -60,15 +61,18 @@ public class CardBlock {
         throw new Exception("В колоде закончились карты");
     }
 
-    public void cardSort() {
-        Arrays.sort(cardBlock, Collections.reverseOrder());
-    }
+    public void addCard(Card card) {
+        this.cardNumber++;
+        cardBlock.add(card);
+    };
 
-    public static void cardSort(Card[] cardBlock) {
-        Arrays.sort(cardBlock, Collections.reverseOrder());
-    }
+    public void addCard(CardBlock main) throws Exception {
+        this.cardNumber++;
+        cardBlock.add(randomCart(main));
+    };
 
-    public Card[] getCardBlock() {
+
+    public ArrayList<Card> getCardBlock() {
         return cardBlock;
     }
 
@@ -76,9 +80,6 @@ public class CardBlock {
         return cardNumber;
     }
 
-    public int[] getCARD_SUIT() {
-        return CARD_SUIT;
-    }
 
     public int getCARD_VALUES_NUM() {
         return CARD_VALUES_NUM;
