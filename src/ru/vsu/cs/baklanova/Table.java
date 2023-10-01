@@ -6,9 +6,12 @@ public class Table {
     private ArrayList<Player> players;
     private CardBlock tableCards;
 
+    private int bigBet;
+
     public Table(int playersNum, CardBlock main) throws Exception {
         setPlayers(main, playersNum, playersNum - 0); // -1
         tableCards = new CardBlock(0, false, main);
+        this.bigBet = 0;
     }
 
     public ArrayList<Player> getPlayers() {

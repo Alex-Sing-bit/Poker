@@ -6,9 +6,12 @@ public class Game {
     private CardBlock block;
     private Table table;
 
+    int circle;
+
     public  Game() throws Exception {
         CardBlock block = new CardBlock(52, true, null);
         Table table = new Table(5, block);
+        this.circle = 0;
     }
 
     public Table getTable() {
@@ -19,8 +22,15 @@ public class Game {
         return block;
     }
 
-    public static void betCircle(ArrayList<Player> players) {
+    public void setCircle(int circle) {
+        this.circle = circle;
+    }
+
+    public static void betCircle(ArrayList<Player> players, CardBlock table) throws Exception {
         int lastBet = 0;
+        if (table.getCARD_VALUES_NUM() != 0) {
+            playersSetStatus(players, table);
+        }
         for (Player p : players) {
             if (p.getMoney() <= 0 || !p.getInGame()) {
                 continue;
@@ -63,12 +73,31 @@ public class Game {
             }*/
         }
     }
+    //После вызова прибавлять круг_счетчик
 
-    public static void cardsOnTable(ArrayList<Player> players) {
+    public static void playersSetStatus(ArrayList<Player> players, CardBlock table) throws Exception {
         for (Player p : players) {
-
+            p.setCardsStatus(CardSetStatus.setStatus(p.getCardBlock(), table));
         }
     }
+
+    public static Player cardsOnTable(ArrayList<Player> players, CardBlock table) throws Exception {
+        Player winner = null;
+        int maxStatus = -1;
+        for (Player p : players) {
+            int c = p.getCardsStatus().getCount();
+            if (maxStatus < c) {
+                maxStatus = c;
+                winner = p;
+            } else if (maxStatus == c) {
+                //Сравнить макс карту
+                ;
+            }
+        }
+
+        return winner;
+    }
+    //Победитель получает общую ставку со стола, на столе она становится 0, обновление статусов
 
     //НАУЧИТЬ ВОЗВРАЩАТЬ КАРТЫ ПРИ СБРОСЕ
     //Функция вероятности не сбросить карты
