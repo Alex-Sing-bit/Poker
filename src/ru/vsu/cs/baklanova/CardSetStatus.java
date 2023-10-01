@@ -47,10 +47,10 @@ public class CardSetStatus {
 
         int doubles = 0;
         int maxValueRepeats = 0;
-        for (int i = 0; i < arr[0].length; i++) {   //По масти
+        for (int i = 0; i < arr.length; i++) {   //По масти
             int k = 0;
-            for (int j = 0; j < arr.length; j++) { //По значению
-                if (arr[j][i] > 0) {
+            for (int j = 0; j < arr[0].length; j++) { //По значению
+                if (arr[i][j] > 0) {
                     k++;
                 }
             }
@@ -61,10 +61,10 @@ public class CardSetStatus {
         }
 
         int cEnum = -1;
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr[0].length; i++) {
             int maxSuitsRepeats = 0;
-            for (int j = 0; j < arr[0].length; j++) {
-                if(arr[i][j] > 0) {
+            for (int j = 0; j < arr.length; j++) {
+                if(arr[j][i] > 0) {
                     maxSuitsRepeats++;
                 }
             }
@@ -77,7 +77,7 @@ public class CardSetStatus {
         if (cEnum >= 0) {
             isLine = isLine(arr[cEnum]);
         }
-        if (cEnum != 0) {
+        if (cEnum != -1) {
             if (isLine == -1) {
                 return CardStatusEnum.FLUSH;
             } else {
@@ -91,7 +91,7 @@ public class CardSetStatus {
                 return CardStatusEnum.FOUR_OF_A_KIND;
             } else if (maxValueRepeats == 3 && doubles > 0) {
                 return CardStatusEnum.FULL_HOUSE;
-            } else if (maxValueRepeats <= 3 && isLine >= 0) {
+            } else if (isLine >= 0) {
                 return CardStatusEnum.STRAIGHT;
             } else if (maxValueRepeats == 3) {
                 return CardStatusEnum.THREE_OF_A_KIND;
@@ -113,7 +113,7 @@ public class CardSetStatus {
             if (n >= 5) {
                 return firstIn;
             }
-            if (arr[i] == arr[i + 1] && arr[i] > 0) {
+            if (arr[i] == arr[i - 1] && arr[i] > 0) {
                 n++;
             } else {
                 firstIn = i;

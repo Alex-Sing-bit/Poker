@@ -71,23 +71,9 @@ public class Program {
             winMain();
         }
         else {
-            CardBlock play = new CardBlock(52, true, null);
-            int i = 1;
-            Player p = new Player(play);
 
-            CardBlock example = new CardBlock(4, false, play);
 
-            CardSetStatus.setStatus(example, p.getCardBlock());
 
-            for (Card c : play.getCardBlock()) {
-                if (c.getCardStatus()) {
-                    System.out.println(i + ". " + c.getCardSuit() + ": " + c.getCardValue());
-                } else {
-                    System.out.println(i);
-                }
-                i++;
-            }
-            System.out.close();
         }
     }
 }
