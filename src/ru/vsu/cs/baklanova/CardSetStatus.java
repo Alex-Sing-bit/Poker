@@ -5,12 +5,13 @@ import java.util.ArrayList;
 public class CardSetStatus {
 
     public static CardStatusEnum setStatus(ArrayList<Card> table, ArrayList<Card> player) throws Exception {
+        final int startK = 2;
         if (player == null) {
             throw new Exception("У игрока нет карт");
         }
         int size = player.size();
         int tableSize = 0;
-        if (table != null) {
+        if (table == null) {
             tableSize += table.size();
             size += tableSize;
         }
@@ -18,7 +19,7 @@ public class CardSetStatus {
         //ВЗЯТЬ КОНСТАНТУ ИЗ КОЛОДЫ
         int CARD_VALUES_NUM = 14;
 
-        int[][] arr = new int[CARD_VALUES_NUM + 1][CardSuitEnum.values().length];
+        int[][] matrix = new int[CARD_VALUES_NUM + 1][CardSuitEnum.values().length];
 
         Card card;
         for (int i = 0; i < size; i++) {
@@ -28,7 +29,7 @@ public class CardSetStatus {
                 card = table.get(i);
             }
 
-            arr[card.getCardValue()][card.getCardSuit().getCount()] += 1;
+            matrix[card.getCardValue()][card.getCardSuit().getCount()] += 1;
         }
 
 
@@ -48,10 +49,10 @@ public class CardSetStatus {
 
         int doubles = 0;
         int maxValueRepeats = 0;
-        for (int i = 0; i < arr.length; i++) {   //По масти
+        for (int i = startK; i < matrix.length; i++) {   //По масти
             int k = 0;
-            for (int j = 0; j < arr[0].length; j++) { //По значению
-                if (arr[i][j] > 0) {
+            for (int j = 0; j < matrix[0].length; j++) { //По значению
+                if (matrix[i][j] > 0) {
                     k++;
                 }
             }
@@ -62,10 +63,10 @@ public class CardSetStatus {
         }
 
         int cEnum = -1;
-        for (int i = 0; i < arr[0].length; i++) {
+        for (int i = 0; i < matrix[0].length; i++) {
             int maxSuitsRepeats = 0;
-            for (int j = 0; j < arr.length; j++) {
-                if(arr[j][i] > 0) {
+            for (int j = startK; j < matrix.length; j++) {
+                if (matrix[j][i] > 0) {
                     maxSuitsRepeats++;
                 }
             }
@@ -76,7 +77,7 @@ public class CardSetStatus {
 
         int isLine = -1;
         if (cEnum >= 0) {
-            isLine = isLine(arr[cEnum]);
+            isLine = isLine(matrix[cEnum]);
         }
         if (cEnum != -1) {
             if (isLine == -1) {
@@ -92,7 +93,7 @@ public class CardSetStatus {
                 return CardStatusEnum.FOUR_OF_A_KIND;
             } else if (maxValueRepeats == 3 && doubles > 0) {
                 return CardStatusEnum.FULL_HOUSE;
-            } else if (isLine >= 0) {
+            } else if (isStraight(matrix, startK)) {
                 return CardStatusEnum.STRAIGHT;
             } else if (maxValueRepeats == 3) {
                 return CardStatusEnum.THREE_OF_A_KIND;
@@ -122,6 +123,28 @@ public class CardSetStatus {
             }
         }
         return -1;
+    }
+
+    private static boolean isStraight(int[][] matrix, int startK) {
+        int count = 0;
+        for (int i = startK; i < matrix.length; i++) {
+            boolean next = false;
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[j][i] > 0) {
+                    next = true;
+                    break;
+                }
+            }
+            if (next) {
+                count++;
+                if (count >= 5) {
+                    break;
+                }
+            } else {
+                count = 0;
+            }
+        }
+        return false;
     }
 }
 

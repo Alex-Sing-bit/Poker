@@ -26,8 +26,9 @@ public class Game {
         this.circle = circle;
     }
 
-    public void betCircle(ArrayList<Player> players, Table table) throws Exception {
-        int lastBet = 0;
+    public void betCircle() throws Exception {
+        ArrayList<Player> players = table.getPlayers();
+        int lastBet = 100;
         if (table.getTableCards().size() != 0) {
             playersSetStatus(players, table);
         }
@@ -42,7 +43,7 @@ public class Game {
                 //ЕСЛИ - поддержать ставку - ставка = ласт ставка
                 //Для обоих - статус в игре
                 //ИНАЧЕ сбросить карты
-            }*/
+            } */
         }
         circle++;
     }
@@ -65,6 +66,7 @@ public class Game {
             }*/
 
             p.setBet(lastBet);
+            table.setBigBet(table.getBigBet() + lastBet);
             p.setInGame(true);
         }
         else {
