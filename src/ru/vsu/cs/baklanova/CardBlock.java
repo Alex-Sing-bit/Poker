@@ -10,19 +10,12 @@ public class CardBlock {
 
     private ArrayList<Card> cardBlock;
 
-    private boolean isMainBlock;
-
-    public CardBlock(int cardNumber, boolean isMainBlock, CardBlock main) throws Exception {
-        this.isMainBlock = isMainBlock;
+    public CardBlock(int cardNumber) throws Exception {
         this.cardNumber = cardNumber;
-        if (isMainBlock) {
-            this.cardBlock = createMainCardBlock();
-        } else {
-            this.cardBlock = createCardBlock(main);
-        }
+        this.cardBlock = createCardBlock();
     }
 
-    public ArrayList<Card> createMainCardBlock() throws Exception {
+    private ArrayList<Card> createCardBlock() throws Exception {
         ArrayList<Card> cardBlock = new ArrayList<>();
         int k = 0;
         int size = CardSuitEnum.values().length;
@@ -37,15 +30,15 @@ public class CardBlock {
         return cardBlock;
     }
 
-    private ArrayList<Card> createCardBlock(CardBlock c) throws Exception {
+    public static ArrayList<Card> createArrayFromCardBlock(CardBlock c) throws Exception {
         ArrayList<Card> cards1 = new ArrayList<>();
-        for (int i = 0; i < cardNumber; i++) {
+        for (int i = 0; i < c.getCardNumber(); i++) {
             cards1.add(randomCart(c));
         }
         return cards1;
     }
 
-    private Card randomCart(CardBlock cb) throws Exception{
+    private static Card randomCart(CardBlock cb) throws Exception{
         int num = cb.getCardBlock().size();
         int k = (int) (num * Math.random());
         for (int i = 0; i < num; i++) {
@@ -61,14 +54,13 @@ public class CardBlock {
         throw new Exception("В колоде закончились карты");
     }
 
-    public void addCard(Card card) {
+    public void addCardToBlock(Card card) {
         this.cardNumber++;
         cardBlock.add(card);
     };
 
-    public void addCard(CardBlock main) throws Exception {
-        this.cardNumber++;
-        cardBlock.add(randomCart(main));
+    public static Card takeCard(CardBlock main) throws Exception {
+        return randomCart(main);
     };
 
 
@@ -85,6 +77,5 @@ public class CardBlock {
         return CARD_VALUES_NUM;
     }
 }
-//
 //Карта как отдельный элемент хранит масть, значение, изображение
 //Колода хранит 36 карт и их состояние

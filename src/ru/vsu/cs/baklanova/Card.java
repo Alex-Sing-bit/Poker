@@ -11,7 +11,6 @@ public class Card implements Comparable <Card> {
         setCardValue(cardValue);
         this.cardStatus = bol;
     }
-    //
 
     public void setCardValue(int cardValue) throws Exception{
         if (cardValue > 0) {

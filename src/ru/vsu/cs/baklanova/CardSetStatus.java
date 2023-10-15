@@ -4,9 +4,7 @@ import java.util.ArrayList;
 
 public class CardSetStatus {
 
-    public static CardStatusEnum setStatus(CardBlock table1, CardBlock player1) throws Exception {
-        ArrayList<Card> table = table1.getCardBlock();
-        ArrayList<Card>  player = player1.getCardBlock();
+    public static CardStatusEnum setStatus(ArrayList<Card> table, ArrayList<Card> player) throws Exception {
         if (player == null) {
             throw new Exception("У игрока нет карт");
         }
@@ -17,7 +15,10 @@ public class CardSetStatus {
             size += tableSize;
         }
 
-        int[][] arr = new int[player1.getCARD_VALUES_NUM() + 1][CardSuitEnum.values().length];
+        //ВЗЯТЬ КОНСТАНТУ ИЗ КОЛОДЫ
+        int CARD_VALUES_NUM = 14;
+
+        int[][] arr = new int[CARD_VALUES_NUM + 1][CardSuitEnum.values().length];
 
         Card card;
         for (int i = 0; i < size; i++) {
@@ -123,5 +124,5 @@ public class CardSetStatus {
         return -1;
     }
 }
-//
+
 //В карту сохраняется место в колоде, чтобы можно было вернуть по индексу

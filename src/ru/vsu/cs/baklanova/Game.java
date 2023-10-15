@@ -8,9 +8,9 @@ public class Game {
 
     int circle;
 
-    public  Game() throws Exception {
-        CardBlock block = new CardBlock(52, true, null);
-        Table table = new Table(5, block);
+    public Game(boolean haveRealPlayer, int playerNum) throws Exception {
+        this.block = new CardBlock(52);
+        this.table = new Table(playerNum, block, haveRealPlayer);
         this.circle = 0;
     }
 
@@ -26,9 +26,9 @@ public class Game {
         this.circle = circle;
     }
 
-    public static void betCircle(ArrayList<Player> players, CardBlock table) throws Exception {
+    public void betCircle(ArrayList<Player> players, Table table) throws Exception {
         int lastBet = 0;
-        if (table.getCARD_VALUES_NUM() != 0) {
+        if (table.getTableCards().size() != 0) {
             playersSetStatus(players, table);
         }
         for (Player p : players) {
@@ -36,35 +36,7 @@ public class Game {
                 continue;
             }
             if (p.getIsNPC()) {
-                if (p.getCardsStatus() != null) {
-                    int choice = (int) (Math.random() * 100);
-                    int notGiveUp = p.getCardsStatus().getCount() * 5;
-                    if (choice < notGiveUp + 45) {
-                        if (choice < notGiveUp) {
-                            lastBet = (int) (Math.random() * p.getMoney());
-                            p.setBet(lastBet);
-                        } else {
-                            lastBet = p.getBet() + lastBet;
-                            p.setBet(lastBet);
-                        }
-
-                        p.setInGame(true);
-                    }
-                    else {
-                        p.setInGame(false);
-
-                        p.setMoney(p.getMoney() - p.getBet());
-                        p.setBet(100);
-                    }
-                } else {
-                    lastBet = p.getBet() + lastBet;
-                    p.setBet(lastBet);
-                    p.setInGame(true);
-                }
-                //ЕСЛИ (рандомное число * 100) < вероятность не сбросить карты(внск)
-                    //ЕСЛИ рандомное число < внск, ТО повысить ставку на ранд(100 : баланс, <= баланс);
-                //Для обоих - статус в игре
-                //ИНАЧЕ сбросить карты
+                lastBet = npcChoice(p, lastBet);
             } /*else {
                 //ЕСЛИ - повысить - повысить ставку на (задано в окне, <= баланс);
                 //ЕСЛИ - поддержать ставку - ставка = ласт ставка
@@ -72,12 +44,45 @@ public class Game {
                 //ИНАЧЕ сбросить карты
             }*/
         }
+        circle++;
     }
     //После вызова прибавлять круг_счетчик
 
-    public static void playersSetStatus(ArrayList<Player> players, CardBlock table) throws Exception {
+    private int npcChoice(Player p, int lastBet) {
+        if (p.getCardsStatus() == null) {
+            return lastBet;
+        }
+        int money = p.getMoney();
+        int bet = p.getBet();
+
+        int choice = (int) (Math.random() * 100);
+        int notGiveUp = p.getCardsStatus().getCount() * 5;
+        if (choice < notGiveUp + 45 || money > lastBet) {
+            if (choice < notGiveUp) {
+                lastBet = (int) (Math.random() * money);
+            } /*else {
+                lastBet = bet + lastBet;
+            }*/
+
+            p.setBet(lastBet);
+            p.setInGame(true);
+        }
+        else {
+            p.setMoney(money - bet);
+            p.setBet(100);
+            p.setInGame(false);
+        }
+
+        return lastBet;
+        //ЕСЛИ (рандомное число * 100) < вероятность не сбросить карты(внск)
+        //ЕСЛИ рандомное число < внск, ТО повысить ставку на ранд(100 : баланс, <= баланс);
+        //Для обоих - статус в игре
+        //ИНАЧЕ сбросить карты
+    }
+
+    public static void playersSetStatus(ArrayList<Player> players, Table table) throws Exception {
         for (Player p : players) {
-            p.setCardsStatus(CardSetStatus.setStatus(p.getCardBlock(), table));
+            p.setCardsStatus(CardSetStatus.setStatus(p.getCards(), table.getTableCards()));
         }
     }
 
@@ -102,5 +107,13 @@ public class Game {
     //НАУЧИТЬ ВОЗВРАЩАТЬ КАРТЫ ПРИ СБРОСЕ
     //Функция вероятности не сбросить карты
     //45% + Статус * 5%
+
+    public boolean gameOver() {
+        for (Player p : table.getPlayers()) {
+            if (p.getMoney() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
-//

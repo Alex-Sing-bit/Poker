@@ -9,28 +9,46 @@ public class Player {
     private int money;
     private int bet;
     private final int cardsNumber = 2;
-    private CardBlock cards;
+    private ArrayList<Card> cards;
 
     private boolean isInGame;
 
     private CardStatusEnum cardsStatus;
 
-    public Player(CardBlock c, boolean isNPC) throws Exception {
+    public Player(CardBlock main, boolean isNPC) throws Exception {
         setName();
         this.isNPC = isNPC;
-        this.money = 10000;
-        this.bet = 100;
+        setMoney(10000);
+        setBet(100);
         this.isInGame = true;
         this.cardsStatus = null;
-        cards = new CardBlock(cardsNumber, false, c);
+        setCards(main);
+    }
+
+    public void setCards(CardBlock main) throws Exception {
+        if (main == null) {
+            //ERROR
+        }
+        ArrayList <Card> cards = new ArrayList<>();
+        for (int i = 0; i < cardsNumber; i++) {
+            cards.add(CardBlock.takeCard(main));
+        }
+
+        this.cards = cards;
     }
 
     public void setBet(int bet) {
-        this.bet = bet;
+        if (bet > 0) {
+            this.bet = bet;
+        }
+        //ERROR
     }
 
     public void setMoney(int money) {
-        this.money = money;
+        if (money >= 0) {
+            this.money = money;
+        }
+        //ERROR
     }
 
     public void setName() {
@@ -46,12 +64,8 @@ public class Player {
         isInGame = inGame;
     }
 
-
-    public CardBlock getCardBlock() {
-        return cards;
-    }
     public ArrayList<Card> getCards() {
-        return cards.getCardBlock();
+        return cards;
     }
 
     public CardStatusEnum getCardsStatus() {
@@ -78,4 +92,3 @@ public class Player {
         return isInGame;
     }
 }
-//

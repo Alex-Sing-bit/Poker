@@ -11,4 +11,3 @@ public enum PlayerEnum {
     KATTY,
     MARI
 }
-//

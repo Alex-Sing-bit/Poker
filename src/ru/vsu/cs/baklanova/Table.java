@@ -4,22 +4,28 @@ import java.util.ArrayList;
 
 public class Table {
     private ArrayList<Player> players;
-    private CardBlock tableCards;
+    private ArrayList<Card> tableCards;
 
-    private int bigBet;
-
-    public Table(int playersNum, CardBlock main) throws Exception {
-        setPlayers(main, playersNum, playersNum - 0); // -1
-        tableCards = new CardBlock(0, false, main);
-        this.bigBet = 0;
+    public Table(int playersNum, CardBlock main, boolean haveRealPlayer) throws Exception {
+        int k = 0;
+        if (haveRealPlayer) {
+            k = 1;
+        }
+        setPlayers(main, playersNum, playersNum - k);
+        setTableCards(main);
     }
 
-    public ArrayList<Player> getPlayers() {
-        return players;
+    public void setTableCards(CardBlock main) throws Exception {
+        setTableCards(main, 0);
     }
 
-    public CardBlock getTableCards() {
-        return tableCards;
+    public void setTableCards(CardBlock main, int num) throws Exception {
+        if (tableCards == null || num <= 0) {
+            tableCards = new ArrayList<>();
+        }
+        for (int i = 0; i < num; i++) {
+            tableCards.add(CardBlock.takeCard(main));
+        }
     }
 
     public void setPlayersToNewCircle() {
@@ -27,19 +33,12 @@ public class Table {
             p.setInGame(true);
         }
     }
-    public boolean gameOver() {
-        for (Player p : players) {
-            if (p.getMoney() > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     public void setPlayers(CardBlock main, int playersNum, int npcNum) throws Exception {
         ArrayList<Player> players = new ArrayList<>();
         boolean isNPC = false;
-        int k = 1;
+        int k = 0;
         for (int i = 0; i < playersNum; i++) {
             if (k < playersNum - npcNum) {
                 k++;
@@ -51,5 +50,12 @@ public class Table {
 
         this.players = players;
     }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
+
+    public ArrayList<Card> getTableCards() {
+        return tableCards;
+    }
 }
-//
