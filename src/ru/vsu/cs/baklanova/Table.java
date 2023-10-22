@@ -6,6 +6,8 @@ public class Table {
     private ArrayList<Player> players;
     private ArrayList<Card> tableCards;
 
+    private int bigBet;
+
     public Table(int playersNum, CardBlock main, boolean haveRealPlayer) throws Exception {
         int k = 0;
         if (haveRealPlayer) {
@@ -13,6 +15,7 @@ public class Table {
         }
         setPlayers(main, playersNum, playersNum - k);
         setTableCards(main);
+        bigBet = 0;
     }
 
     public void setTableCards(CardBlock main) throws Exception {
@@ -51,11 +54,19 @@ public class Table {
         this.players = players;
     }
 
+    public void setBigBet(int bigBet) {
+        this.bigBet = bigBet;
+    }
+
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
     public ArrayList<Card> getTableCards() {
         return tableCards;
+    }
+
+    public int getBigBet() {
+        return bigBet;
     }
 }

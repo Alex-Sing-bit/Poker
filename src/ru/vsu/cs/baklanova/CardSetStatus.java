@@ -11,7 +11,7 @@ public class CardSetStatus {
         }
         int size = player.size();
         int tableSize = 0;
-        if (table == null) {
+        if (table != null) {
             tableSize += table.size();
             size += tableSize;
         }

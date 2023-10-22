@@ -1,8 +1,6 @@
 package ru.vsu.cs.baklanova;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class CardBlock {
     private int cardNumber;

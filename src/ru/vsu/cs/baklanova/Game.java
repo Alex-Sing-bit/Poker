@@ -88,14 +88,14 @@ public class Game {
         }
     }
 
-    public static Player cardsOnTable(ArrayList<Player> players, CardBlock table) throws Exception {
-        Player winner = null;
+    public static int cardsOnTable(ArrayList<Player> players, Table table) throws Exception {
+        int winner = -1;
         int maxStatus = -1;
-        for (Player p : players) {
-            int c = p.getCardsStatus().getCount();
+        for (int i = 0; i < players.size(); i++) {
+            int c = players.get(i).getCardsStatus().getCount();
             if (maxStatus < c) {
                 maxStatus = c;
-                winner = p;
+                winner = i;
             } else if (maxStatus == c) {
                 //Сравнить макс карту
                 ;
