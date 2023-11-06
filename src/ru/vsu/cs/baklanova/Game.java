@@ -33,7 +33,7 @@ public class Game {
     }
 
     public void gameRound() throws Exception {
-        while (true) {
+        while (!gameOver()) {
             if (circle < 0 || circle > 4) {
                 circle = 0;
             }
@@ -44,7 +44,7 @@ public class Game {
             }
             betCircle();
             if (circle > 3) {
-                cardsOnTable();
+                cardsOnTable(table);
             }
         }
     }
@@ -108,7 +108,8 @@ public class Game {
         }
     }
 
-    public static int cardsOnTable(ArrayList<Player> players, Table table) throws Exception {
+    public static int cardsOnTable(Table table) throws Exception {
+        ArrayList<Player> players = table.getPlayers();
         int winner = -1;
         int maxStatus = -1;
         int winnerMaxCard = -1;
