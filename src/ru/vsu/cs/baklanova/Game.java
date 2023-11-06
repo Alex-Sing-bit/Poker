@@ -28,14 +28,23 @@ public class Game {
         return block;
     }
 
-    public void setCircle(int circle) {
+    private void setCircle(int circle) {
         this.circle = circle;
     }
 
     public void gameRound() throws Exception {
         while (!gameOver()) {
+            oneRound();
+        }
+    }
+
+    public void oneRound() throws Exception {
+        while (roundOver() == -1) {
             if (circle < 0 || circle > 4) {
                 circle = 0;
+            }
+            if (circle == 0) {
+                setTable(new Table(table.getPlayers().size(), block, table.haveRealPlayer));
             }
             if (circle == 1) {
                 table.setTableCards(block, 3);
@@ -44,15 +53,26 @@ public class Game {
             }
             betCircle();
             if (circle > 3) {
-                cardsOnTable(table);
+                System.out.println("Победитель = " + table.getPlayers().get(cardsOnTable(table)));
             }
         }
+
+        if (roundOver() >= 0) { //Один победитель
+            int money = table.getPlayers().get(roundOver()).getMoney();
+            int bet = table.getBigBet();
+            table.getPlayers().get(roundOver()).setMoney(money + bet);
+            table.setBigBet(0);
+        }
+
+        //Ничья if (roundOver() <= -2)
     }
 
-    public void betCircle() throws Exception {
+    private void betCircle() throws Exception {
         ArrayList<Player> players = table.getPlayers();
         int lastBet = 100;
-        if (table.getTableCards().size() != 0) {
+        if (circle == 0) {
+            playersSetStatus(players, null);
+        } else {
             playersSetStatus(players, table);
         }
         for (Player p : players) {
@@ -80,8 +100,8 @@ public class Game {
         int bet = p.getBet();
 
         int choice = (int) (Math.random() * 100);
-        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5;
-        if (choice < notGiveUp + 45 || money > lastBet) {
+        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5 + p.getCardsStatus().getMax();
+        if (choice < notGiveUp + 75 && money > lastBet) {
             if (choice < notGiveUp) {
                 lastBet = (int) (Math.random() * money);
             }
@@ -102,13 +122,17 @@ public class Game {
         //ИНАЧЕ сбросить карты
     }
 
-    public static void playersSetStatus(ArrayList<Player> players, Table table) throws Exception {
+    private static void playersSetStatus(ArrayList<Player> players, Table table) throws Exception {
         for (Player p : players) {
-            p.setCardsStatus(CardSetStatus.setStatus(p.getCards(), table.getTableCards()));
+            if (table != null) {
+                p.setCardsStatus(CardSetStatus.setStatus(table.getTableCards(), p.getCards()));
+            } else {
+                p.setCardsStatus(CardSetStatus.setStatus(null, p.getCards()));
+            }
         }
     }
 
-    public static int cardsOnTable(Table table) throws Exception {
+    private static int cardsOnTable(Table table) throws Exception {
         ArrayList<Player> players = table.getPlayers();
         int winner = -1;
         int maxStatus = -1;
@@ -136,12 +160,36 @@ public class Game {
     //Функция вероятности не сбросить карты
     //45% + Статус * 5%
 
-    public boolean gameOver() {
+    private boolean gameOver() {
         for (Player p : table.getPlayers()) {
             if (p.getMoney() > 0) {
                 return false;
             }
         }
         return true;
+    }
+
+    private int roundOver() {
+        int k = 0;
+        int iWinner = -1;
+        for (int i = 0; i < table.getPlayers().size(); i++) {
+            Player p = table.getPlayers().get(i);
+            if (p.getInGame()) {
+                k++;
+                iWinner = i;
+            }
+            if (k > 1) {
+                return -1;
+            }
+        }
+
+        if (k == 1) {
+            return iWinner;
+        }
+        return -2;
+    }
+
+    private void setTable(Table table) {
+        this.table = table;
     }
 }

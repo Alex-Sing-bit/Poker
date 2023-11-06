@@ -23,17 +23,25 @@ public class CardSetStatus {
 
         Card card;
         int max = -1;
-        for (int i = 0; i < size; i++) {
-            if (i > tableSize - 1) {
-                card = player.get(i % (tableSize - 1) - 1);
-            } else {
-                card = table.get(i);
+        if (tableSize > 0) {
+            for (int i = 0; i < size; i++) {
+                if (i > tableSize - 1) {
+                    card = player.get((i + tableSize) % (tableSize - 1) - 1);
+                } else {
+                    card = table.get(i);
+                }
+                if (card.getCardValue() > max)
+                    max = card.getCardValue();
+                matrix[card.getCardValue()][card.getCardSuit().getCount()] += 1;
             }
-            if (card.getCardValue() > max)
-                max = card.getCardValue();
-            matrix[card.getCardValue()][card.getCardSuit().getCount()] += 1;
+        } else {
+            max = Math.max(player.get(0).getCardValue(), player.get(1).getCardValue());
         }
         CardStatus status = new CardStatus(CardStatusEnum.HIGH_CARD, max);
+
+        if (tableSize == 0) {
+            return status;
+        }
 
         /*
         : - из массива

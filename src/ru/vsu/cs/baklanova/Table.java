@@ -12,8 +12,11 @@ public class Table {
 
     private int bigBet;
 
+    boolean haveRealPlayer;
+
     public Table(int playersNum, CardBlock main, boolean haveRealPlayer) throws Exception {
         int k = 0;
+        this.haveRealPlayer = haveRealPlayer;
         if (haveRealPlayer) {
             k = 1;
         }

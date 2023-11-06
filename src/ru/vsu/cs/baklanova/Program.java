@@ -1,5 +1,7 @@
 package ru.vsu.cs.baklanova;
 
+import ru.vsu.cs.baklanova.Player.Player;
+
 import java.io.PrintStream;
 import java.util.Locale;
 
@@ -71,8 +73,18 @@ public class Program {
             winMain();
         }
         else {
+            if (params.first) {
+                Game mainGame = new Game(false, 2);
+                for (Player player : mainGame.getTable().getPlayers()) {
+                    System.out.println("NAME: " + player.getName());
+                    System.out.println("MONEY: " + player.getMoney());
+                    System.out.println(player.getCards().get(0).getCardSuit() + " " + player.getCards().get(0).getCardValue());
+                    System.out.println(player.getCards().get(1).getCardSuit() + " " + player.getCards().get(1).getCardValue());
+                    System.out.println();
+                }
 
-
+                mainGame.gameRound();
+            }
 
         }
     }
