@@ -1,4 +1,4 @@
-package ru.vsu.cs.baklanova;
+package ru.vsu.cs.baklanova.Cards;
 
 public class Card implements Comparable <Card> {
     private final CardSuitEnum cardSuit;

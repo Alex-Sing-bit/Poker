@@ -1,5 +1,9 @@
 package ru.vsu.cs.baklanova;
 
+import ru.vsu.cs.baklanova.Cards.Card;
+import ru.vsu.cs.baklanova.Cards.CardBlock;
+import ru.vsu.cs.baklanova.Player.Player;
+
 import java.util.ArrayList;
 
 public class Table {
@@ -18,7 +22,7 @@ public class Table {
         bigBet = 0;
     }
 
-    public void setTableCards(CardBlock main) throws Exception {
+    private void setTableCards(CardBlock main) throws Exception {
         setTableCards(main, 0);
     }
 

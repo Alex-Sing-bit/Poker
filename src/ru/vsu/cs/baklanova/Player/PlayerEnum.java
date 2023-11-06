@@ -1,4 +1,4 @@
-package ru.vsu.cs.baklanova;
+package ru.vsu.cs.baklanova.Player;
 
 public enum PlayerEnum {
     SASHA,

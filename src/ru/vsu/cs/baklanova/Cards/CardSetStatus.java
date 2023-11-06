@@ -1,10 +1,10 @@
-package ru.vsu.cs.baklanova;
+package ru.vsu.cs.baklanova.Cards;
 
 import java.util.ArrayList;
 
 public class CardSetStatus {
 
-    public static CardStatusEnum setStatus(ArrayList<Card> table, ArrayList<Card> player) throws Exception {
+    public static CardStatus setStatus(ArrayList<Card> table, ArrayList<Card> player) throws Exception {
         final int startK = 2;
         if (player == null) {
             throw new Exception("У игрока нет карт");
@@ -22,16 +22,18 @@ public class CardSetStatus {
         int[][] matrix = new int[CARD_VALUES_NUM + 1][CardSuitEnum.values().length];
 
         Card card;
+        int max = -1;
         for (int i = 0; i < size; i++) {
             if (i > tableSize - 1) {
                 card = player.get(i % (tableSize - 1) - 1);
             } else {
                 card = table.get(i);
             }
-
+            if (card.getCardValue() > max)
+                max = card.getCardValue();
             matrix[card.getCardValue()][card.getCardSuit().getCount()] += 1;
         }
-
+        CardStatus status = new CardStatus(CardStatusEnum.HIGH_CARD, max);
 
         /*
         : - из массива
@@ -81,31 +83,40 @@ public class CardSetStatus {
         }
         if (cEnum != -1) {
             if (isLine == -1) {
-                return CardStatusEnum.FLUSH;
+                status.setStatus(CardStatusEnum.FLUSH);
+                return status;
             } else {
                 if (isLine == 14) {
-                    return CardStatusEnum.ROYAL_FLUSH;
+                    status.setStatus(CardStatusEnum.ROYAL_FLUSH);
+                    return status;
                 }
-                return CardStatusEnum.STRAIGHT_FLUSH;
+                status.setStatus(CardStatusEnum.STRAIGHT_FLUSH);
+                return status;
             }
         } else {
             if (maxValueRepeats == 4) {
-                return CardStatusEnum.FOUR_OF_A_KIND;
+                status.setStatus(CardStatusEnum.FOUR_OF_A_KIND);
+                return status;
             } else if (maxValueRepeats == 3 && doubles > 0) {
-                return CardStatusEnum.FULL_HOUSE;
+                status.setStatus(CardStatusEnum.FULL_HOUSE);
+                return status;
             } else if (isStraight(matrix, startK)) {
-                return CardStatusEnum.STRAIGHT;
+                status.setStatus(CardStatusEnum.STRAIGHT);
+                return status;
             } else if (maxValueRepeats == 3) {
-                return CardStatusEnum.THREE_OF_A_KIND;
+                status.setStatus(CardStatusEnum.THREE_OF_A_KIND);
+                return status;
             } else if (doubles > 0) {
                 if (doubles == 2) {
-                    return CardStatusEnum.TWO_PAIR;
+                    status.setStatus(CardStatusEnum.TWO_PAIR);
+                    return status;
                 }
-                return CardStatusEnum.ONE_PAIR;
+                status.setStatus(CardStatusEnum.ONE_PAIR);
+                return status;
             }
         }
 
-        return CardStatusEnum.HIGH_CARD;
+        return status;
     }
 
     private static int isLine(int[] arr) {

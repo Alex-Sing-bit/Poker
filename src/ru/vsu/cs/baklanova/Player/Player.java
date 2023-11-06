@@ -1,4 +1,9 @@
-package ru.vsu.cs.baklanova;
+package ru.vsu.cs.baklanova.Player;
+
+import ru.vsu.cs.baklanova.Cards.Card;
+import ru.vsu.cs.baklanova.Cards.CardBlock;
+import ru.vsu.cs.baklanova.Cards.CardStatus;
+import ru.vsu.cs.baklanova.Cards.CardStatusEnum;
 
 import java.util.ArrayList;
 
@@ -13,7 +18,7 @@ public class Player {
 
     private boolean isInGame;
 
-    private CardStatusEnum cardsStatus;
+    private CardStatus cardsStatus;
 
     public Player(CardBlock main, boolean isNPC) throws Exception {
         setName();
@@ -56,7 +61,7 @@ public class Player {
         this.name = arr[(int) (Math.random()* arr.length)].name();
     }
 
-    public void setCardsStatus(CardStatusEnum cardsStatus) {
+    public void setCardsStatus(CardStatus cardsStatus) {
         this.cardsStatus = cardsStatus;
     }
 
@@ -68,7 +73,7 @@ public class Player {
         return cards;
     }
 
-    public CardStatusEnum getCardsStatus() {
+    public CardStatus getCardsStatus() {
         return cardsStatus;
     }
 

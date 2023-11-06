@@ -1,4 +1,4 @@
-package ru.vsu.cs.baklanova;
+package ru.vsu.cs.baklanova.Cards;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package ru.vsu.cs.baklanova;
+package ru.vsu.cs.baklanova.Cards;
 
 public enum CardStatusEnum {
     HIGH_CARD(0, "Старшая карта"),

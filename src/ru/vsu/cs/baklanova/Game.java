@@ -1,5 +1,11 @@
 package ru.vsu.cs.baklanova;
 
+import ru.vsu.cs.baklanova.Cards.Card;
+import ru.vsu.cs.baklanova.Cards.CardBlock;
+import ru.vsu.cs.baklanova.Cards.CardSetStatus;
+import ru.vsu.cs.baklanova.Cards.CardStatus;
+import ru.vsu.cs.baklanova.Player.Player;
+
 import java.util.ArrayList;
 
 public class Game {
@@ -24,6 +30,23 @@ public class Game {
 
     public void setCircle(int circle) {
         this.circle = circle;
+    }
+
+    public void gameRound() throws Exception {
+        while (true) {
+            if (circle < 0 || circle > 4) {
+                circle = 0;
+            }
+            if (circle == 1) {
+                table.setTableCards(block, 3);
+            } else if (circle == 2 || circle == 3) {
+                table.getTableCards().add(CardBlock.takeCard(block));
+            }
+            betCircle();
+            if (circle > 3) {
+                cardsOnTable();
+            }
+        }
     }
 
     public void betCircle() throws Exception {
@@ -57,21 +80,18 @@ public class Game {
         int bet = p.getBet();
 
         int choice = (int) (Math.random() * 100);
-        int notGiveUp = p.getCardsStatus().getCount() * 5;
+        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5;
         if (choice < notGiveUp + 45 || money > lastBet) {
             if (choice < notGiveUp) {
                 lastBet = (int) (Math.random() * money);
-            } /*else {
-                lastBet = bet + lastBet;
-            }*/
+            }
 
-            p.setBet(lastBet);
+            p.setBet(bet + lastBet);
+            p.setMoney(p.getMoney() - lastBet);
             table.setBigBet(table.getBigBet() + lastBet);
             p.setInGame(true);
         }
         else {
-            p.setMoney(money - bet);
-            p.setBet(100);
             p.setInGame(false);
         }
 
@@ -91,14 +111,19 @@ public class Game {
     public static int cardsOnTable(ArrayList<Player> players, Table table) throws Exception {
         int winner = -1;
         int maxStatus = -1;
+        int winnerMaxCard = -1;
         for (int i = 0; i < players.size(); i++) {
-            int c = players.get(i).getCardsStatus().getCount();
-            if (maxStatus < c) {
-                maxStatus = c;
+            CardStatus c = players.get(i).getCardsStatus();
+            int statusC = c.getStatus().getCount();
+            if (maxStatus < statusC) {
+                maxStatus = statusC;
                 winner = i;
-            } else if (maxStatus == c) {
-                //Сравнить макс карту
-                ;
+                winnerMaxCard = c.getMax();
+            } else if (maxStatus == statusC) {
+                if (winnerMaxCard < c.getMax()) {
+                    winner = i;
+                    winnerMaxCard = c.getMax();
+                }
             }
         }
 
