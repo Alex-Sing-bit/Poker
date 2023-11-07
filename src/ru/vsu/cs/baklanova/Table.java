@@ -34,7 +34,7 @@ public class Table {
             tableCards = new ArrayList<>();
         }
         for (int i = 0; i < num; i++) {
-            tableCards.add(CardBlock.takeCard(main));
+            tableCards.add(main.takeCard());
         }
     }
 

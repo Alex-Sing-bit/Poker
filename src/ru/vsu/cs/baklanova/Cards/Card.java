@@ -6,10 +6,10 @@ public class Card implements Comparable <Card> {
     private boolean cardStatus;
 
 
-    public Card(CardSuitEnum cardSuit, int cardValue, boolean bol) throws Exception {
+    public Card(CardSuitEnum cardSuit, int cardValue, boolean bool) throws Exception {
         this.cardSuit = cardSuit;
         setCardValue(cardValue);
-        this.cardStatus = bol;
+        this.cardStatus = bool;
     }
 
     public void setCardValue(int cardValue) throws Exception{

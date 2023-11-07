@@ -1,5 +1,6 @@
 package ru.vsu.cs.baklanova;
 
+import ru.vsu.cs.baklanova.Cards.CardBlock;
 import ru.vsu.cs.baklanova.Player.Player;
 
 import java.io.PrintStream;
@@ -83,7 +84,10 @@ public class Program {
                     System.out.println();
                 }
 
-                mainGame.gameRound();
+                CardBlock cardBlock = new CardBlock(12);
+                cardBlock.takeCard();
+                System.out.println();
+                //mainGame.gameRound();
             }
 
         }

@@ -1,6 +1,6 @@
 package ru.vsu.cs.baklanova.Cards;
 
-public enum CardStatusEnum {
+public enum CardsCombinationStatusEnum {
     HIGH_CARD(0, "Старшая карта"),
     ONE_PAIR(1,"Пара"),
     TWO_PAIR(2,"Две пары"),
@@ -15,7 +15,7 @@ public enum CardStatusEnum {
     private int count;
     private String rusStringName;
 
-    CardStatusEnum(int count, String rusStringName){
+    CardsCombinationStatusEnum(int count, String rusStringName){
         this.count = count;
         this.rusStringName = rusStringName;
     }

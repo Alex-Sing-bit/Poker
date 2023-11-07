@@ -3,10 +3,12 @@ package ru.vsu.cs.baklanova.Cards;
 import java.util.ArrayList;
 
 public class CardBlock {
-    private int cardNumber;
+    private final int cardNumber;
     private final int CARD_VALUES_NUM = 14;
 
     private ArrayList<Card> cardBlock;
+
+    //Делать блок рандомным, добавлять карты в конец, забираем из начала
 
     public CardBlock(int cardNumber) throws Exception {
         this.cardNumber = cardNumber;
@@ -25,24 +27,27 @@ public class CardBlock {
             if (k > 3) k = 0;
         }
 
+        size = cardBlock.size();
+
         return cardBlock;
     }
 
     public static ArrayList<Card> createArrayFromCardBlock(CardBlock c) throws Exception {
         ArrayList<Card> cards1 = new ArrayList<>();
         for (int i = 0; i < c.getCardNumber(); i++) {
-            cards1.add(randomCart(c));
+            cards1.add(c.randomCart());
         }
         return cards1;
     }
 
-    private static Card randomCart(CardBlock cb) throws Exception{
-        int num = cb.getCardBlock().size();
+    private Card randomCart() throws Exception{
+        int num = cardNumber;
         int k = (int) (num * Math.random());
         for (int i = 0; i < num; i++) {
-            if (cb.getCardBlock().get(k).getCardStatus()) {
-                cb.getCardBlock().get(k).setCardStatus(false);
-                return cb.getCardBlock().get(k);
+            Card b = cardBlock.get(k);
+            if (b.getCardStatus()) {
+                b.setCardStatus(false);
+                return b;
             } else {
                 k++;
                 k = k % num;
@@ -52,13 +57,18 @@ public class CardBlock {
         throw new Exception("В колоде закончились карты");
     }
 
-    public void addCardToBlock(Card card) {
-        this.cardNumber++;
-        cardBlock.add(card);
+    public void returnCardToBlock(Card card) throws Exception {
+        int i = card.getCardValue();
+        int j = card.getCardSuit().getCount();
+        int k = 4 * (CARD_VALUES_NUM - i) + j;
+        if (k > cardNumber) {
+            throw new Exception("В блоке не было такой карты");
+        }
+        cardBlock.get(k).setCardStatus(true);
     };
 
-    public static Card takeCard(CardBlock main) throws Exception {
-        return randomCart(main);
+    public Card takeCard() throws Exception {
+        return randomCart();
     };
 
 

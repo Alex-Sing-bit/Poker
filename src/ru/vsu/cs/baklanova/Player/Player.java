@@ -2,8 +2,7 @@ package ru.vsu.cs.baklanova.Player;
 
 import ru.vsu.cs.baklanova.Cards.Card;
 import ru.vsu.cs.baklanova.Cards.CardBlock;
-import ru.vsu.cs.baklanova.Cards.CardStatus;
-import ru.vsu.cs.baklanova.Cards.CardStatusEnum;
+import ru.vsu.cs.baklanova.Cards.CardsCombinationStatus;
 
 import java.util.ArrayList;
 
@@ -18,7 +17,7 @@ public class Player {
 
     private boolean isInGame;
 
-    private CardStatus cardsStatus;
+    private CardsCombinationStatus cardsStatus;
 
     public Player(CardBlock main, boolean isNPC) throws Exception {
         setName();
@@ -36,7 +35,7 @@ public class Player {
         }
         ArrayList <Card> cards = new ArrayList<>();
         for (int i = 0; i < cardsNumber; i++) {
-            cards.add(CardBlock.takeCard(main));
+            cards.add(main.takeCard());
         }
 
         this.cards = cards;
@@ -61,7 +60,7 @@ public class Player {
         this.name = arr[(int) (Math.random()* arr.length)].name();
     }
 
-    public void setCardsStatus(CardStatus cardsStatus) {
+    public void setCardsStatus(CardsCombinationStatus cardsStatus) {
         this.cardsStatus = cardsStatus;
     }
 
@@ -73,7 +72,7 @@ public class Player {
         return cards;
     }
 
-    public CardStatus getCardsStatus() {
+    public CardsCombinationStatus getCardsStatus() {
         return cardsStatus;
     }
 

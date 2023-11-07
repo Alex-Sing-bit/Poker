@@ -1,15 +1,15 @@
 package ru.vsu.cs.baklanova.Cards;
 
-public class CardStatus {
-    private CardStatusEnum status;
+public class CardsCombinationStatus {
+    private CardsCombinationStatusEnum status;
     private int max;
 
-    public CardStatus(CardStatusEnum status, int max) {
+    public CardsCombinationStatus(CardsCombinationStatusEnum status, int max) {
         this.status = status;
         this.max = max;
     }
 
-    public void setStatus(CardStatusEnum status) {
+    public void setStatus(CardsCombinationStatusEnum status) {
         this.status = status;
     }
 
@@ -17,7 +17,7 @@ public class CardStatus {
         this.max = max;
     }
 
-    public CardStatusEnum getStatus() {
+    public CardsCombinationStatusEnum getStatus() {
         return status;
     }
 

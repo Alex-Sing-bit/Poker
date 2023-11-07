@@ -2,9 +2,9 @@ package ru.vsu.cs.baklanova.Cards;
 
 import java.util.ArrayList;
 
-public class CardSetStatus {
+public class CardsCombinationSetStatus {
 
-    public static CardStatus setStatus(ArrayList<Card> table, ArrayList<Card> player) throws Exception {
+    public static CardsCombinationStatus setStatus(ArrayList<Card> table, ArrayList<Card> player) throws Exception {
         final int startK = 2;
         if (player == null) {
             throw new Exception("У игрока нет карт");
@@ -37,7 +37,7 @@ public class CardSetStatus {
         } else {
             max = Math.max(player.get(0).getCardValue(), player.get(1).getCardValue());
         }
-        CardStatus status = new CardStatus(CardStatusEnum.HIGH_CARD, max);
+        CardsCombinationStatus status = new CardsCombinationStatus(CardsCombinationStatusEnum.HIGH_CARD, max);
 
         if (tableSize == 0) {
             return status;
@@ -91,35 +91,35 @@ public class CardSetStatus {
         }
         if (cEnum != -1) {
             if (isLine == -1) {
-                status.setStatus(CardStatusEnum.FLUSH);
+                status.setStatus(CardsCombinationStatusEnum.FLUSH);
                 return status;
             } else {
                 if (isLine == 14) {
-                    status.setStatus(CardStatusEnum.ROYAL_FLUSH);
+                    status.setStatus(CardsCombinationStatusEnum.ROYAL_FLUSH);
                     return status;
                 }
-                status.setStatus(CardStatusEnum.STRAIGHT_FLUSH);
+                status.setStatus(CardsCombinationStatusEnum.STRAIGHT_FLUSH);
                 return status;
             }
         } else {
             if (maxValueRepeats == 4) {
-                status.setStatus(CardStatusEnum.FOUR_OF_A_KIND);
+                status.setStatus(CardsCombinationStatusEnum.FOUR_OF_A_KIND);
                 return status;
             } else if (maxValueRepeats == 3 && doubles > 0) {
-                status.setStatus(CardStatusEnum.FULL_HOUSE);
+                status.setStatus(CardsCombinationStatusEnum.FULL_HOUSE);
                 return status;
             } else if (isStraight(matrix, startK)) {
-                status.setStatus(CardStatusEnum.STRAIGHT);
+                status.setStatus(CardsCombinationStatusEnum.STRAIGHT);
                 return status;
             } else if (maxValueRepeats == 3) {
-                status.setStatus(CardStatusEnum.THREE_OF_A_KIND);
+                status.setStatus(CardsCombinationStatusEnum.THREE_OF_A_KIND);
                 return status;
             } else if (doubles > 0) {
                 if (doubles == 2) {
-                    status.setStatus(CardStatusEnum.TWO_PAIR);
+                    status.setStatus(CardsCombinationStatusEnum.TWO_PAIR);
                     return status;
                 }
-                status.setStatus(CardStatusEnum.ONE_PAIR);
+                status.setStatus(CardsCombinationStatusEnum.ONE_PAIR);
                 return status;
             }
         }

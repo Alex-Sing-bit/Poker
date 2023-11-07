@@ -1,9 +1,8 @@
 package ru.vsu.cs.baklanova;
 
-import ru.vsu.cs.baklanova.Cards.Card;
 import ru.vsu.cs.baklanova.Cards.CardBlock;
-import ru.vsu.cs.baklanova.Cards.CardSetStatus;
-import ru.vsu.cs.baklanova.Cards.CardStatus;
+import ru.vsu.cs.baklanova.Cards.CardsCombinationSetStatus;
+import ru.vsu.cs.baklanova.Cards.CardsCombinationStatus;
 import ru.vsu.cs.baklanova.Player.Player;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class Game {
             if (circle == 1) {
                 table.setTableCards(block, 3);
             } else if (circle == 2 || circle == 3) {
-                table.getTableCards().add(CardBlock.takeCard(block));
+                table.getTableCards().add(block.takeCard());
             }
             betCircle();
             if (circle > 3) {
@@ -125,9 +124,9 @@ public class Game {
     private static void playersSetStatus(ArrayList<Player> players, Table table) throws Exception {
         for (Player p : players) {
             if (table != null) {
-                p.setCardsStatus(CardSetStatus.setStatus(table.getTableCards(), p.getCards()));
+                p.setCardsStatus(CardsCombinationSetStatus.setStatus(table.getTableCards(), p.getCards()));
             } else {
-                p.setCardsStatus(CardSetStatus.setStatus(null, p.getCards()));
+                p.setCardsStatus(CardsCombinationSetStatus.setStatus(null, p.getCards()));
             }
         }
     }
@@ -138,7 +137,7 @@ public class Game {
         int maxStatus = -1;
         int winnerMaxCard = -1;
         for (int i = 0; i < players.size(); i++) {
-            CardStatus c = players.get(i).getCardsStatus();
+            CardsCombinationStatus c = players.get(i).getCardsStatus();
             int statusC = c.getStatus().getCount();
             if (maxStatus < statusC) {
                 maxStatus = statusC;
