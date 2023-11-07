@@ -76,7 +76,7 @@ public class Program {
         else {
             if (params.first) {
                 Game mainGame = new Game(false, 2);
-                for (Player player : mainGame.getTable().getPlayers()) {
+                for (Player player : mainGame.getPlayers()) {
                     System.out.println("NAME: " + player.getName());
                     System.out.println("MONEY: " + player.getMoney());
                     System.out.println(player.getCards().get(0).getCardSuit() + " " + player.getCards().get(0).getCardValue());

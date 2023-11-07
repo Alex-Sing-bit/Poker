@@ -7,20 +7,11 @@ import ru.vsu.cs.baklanova.Player.Player;
 import java.util.ArrayList;
 
 public class Table {
-    private ArrayList<Player> players;
     private ArrayList<Card> tableCards;
 
     private int bigBet;
 
-    boolean haveRealPlayer;
-
-    public Table(int playersNum, CardBlock main, boolean haveRealPlayer) throws Exception {
-        int k = 0;
-        this.haveRealPlayer = haveRealPlayer;
-        if (haveRealPlayer) {
-            k = 1;
-        }
-        setPlayers(main, playersNum, playersNum - k);
+    public Table(CardBlock main) throws Exception {
         setTableCards(main);
         bigBet = 0;
     }
@@ -38,36 +29,11 @@ public class Table {
         }
     }
 
-    public void setPlayersToNewCircle() {
-        for (Player p : players) {
-            p.setInGame(true);
-        }
-    }
-
-
-    public void setPlayers(CardBlock main, int playersNum, int npcNum) throws Exception {
-        ArrayList<Player> players = new ArrayList<>();
-        boolean isNPC = false;
-        int k = 0;
-        for (int i = 0; i < playersNum; i++) {
-            if (k < playersNum - npcNum) {
-                k++;
-            } else {
-                isNPC = true;
-            }
-            players.add(new Player(main, isNPC));
-        }
-
-        this.players = players;
-    }
-
     public void setBigBet(int bigBet) {
         this.bigBet = bigBet;
     }
 
-    public ArrayList<Player> getPlayers() {
-        return players;
-    }
+
 
     public ArrayList<Card> getTableCards() {
         return tableCards;

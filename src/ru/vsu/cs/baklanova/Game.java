@@ -10,12 +10,15 @@ import java.util.ArrayList;
 public class Game {
     private CardBlock block;
     private Table table;
+    private ArrayList<Player> players;
 
     int circle;
 
-    public Game(boolean haveRealPlayer, int playerNum) throws Exception {
+    public Game(boolean haveRealPlayer, int playersNum) throws Exception {
         this.block = new CardBlock(52);
-        this.table = new Table(playerNum, block, haveRealPlayer);
+        this.table = new Table(block);
+        int k = (haveRealPlayer ? 1 : 0);
+        setPlayers(block, playersNum, playersNum - k);
         this.circle = 0;
     }
 
@@ -43,7 +46,7 @@ public class Game {
                 circle = 0;
             }
             if (circle == 0) {
-                setTable(new Table(table.getPlayers().size(), block, table.haveRealPlayer));
+                //setTable(new Table(players.size(), block, players.haveRealPlayer));
             }
             if (circle == 1) {
                 table.setTableCards(block, 3);
@@ -52,14 +55,14 @@ public class Game {
             }
             betCircle();
             if (circle > 3) {
-                System.out.println("Победитель = " + table.getPlayers().get(cardsOnTable(table)));
+                System.out.println("Победитель = " + players.get(cardsOnTable()));
             }
         }
 
         if (roundOver() >= 0) { //Один победитель
-            int money = table.getPlayers().get(roundOver()).getMoney();
+            int money = players.get(roundOver()).getMoney();
             int bet = table.getBigBet();
-            table.getPlayers().get(roundOver()).setMoney(money + bet);
+            players.get(roundOver()).setMoney(money + bet);
             table.setBigBet(0);
         }
 
@@ -67,7 +70,6 @@ public class Game {
     }
 
     private void betCircle() throws Exception {
-        ArrayList<Player> players = table.getPlayers();
         int lastBet = 100;
         if (circle == 0) {
             playersSetStatus(players, null);
@@ -131,8 +133,7 @@ public class Game {
         }
     }
 
-    private static int cardsOnTable(Table table) throws Exception {
-        ArrayList<Player> players = table.getPlayers();
+    private int cardsOnTable() throws Exception {
         int winner = -1;
         int maxStatus = -1;
         int winnerMaxCard = -1;
@@ -160,7 +161,7 @@ public class Game {
     //45% + Статус * 5%
 
     private boolean gameOver() {
-        for (Player p : table.getPlayers()) {
+        for (Player p : players) {
             if (p.getMoney() > 0) {
                 return false;
             }
@@ -171,8 +172,8 @@ public class Game {
     private int roundOver() {
         int k = 0;
         int iWinner = -1;
-        for (int i = 0; i < table.getPlayers().size(); i++) {
-            Player p = table.getPlayers().get(i);
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
             if (p.getInGame()) {
                 k++;
                 iWinner = i;
@@ -190,5 +191,32 @@ public class Game {
 
     private void setTable(Table table) {
         this.table = table;
+    }
+
+    public void setPlayersToNewCircle() {
+        for (Player p : players) {
+            p.setInGame(true);
+        }
+    }
+
+
+    public void setPlayers(CardBlock main, int playersNum, int npcNum) throws Exception {
+        ArrayList<Player> players = new ArrayList<>();
+        boolean isNPC = false;
+        int k = 0;
+        for (int i = 0; i < playersNum; i++) {
+            if (k < playersNum - npcNum) {
+                k++;
+            } else {
+                isNPC = true;
+            }
+            players.add(new Player(main, isNPC));
+        }
+
+        this.players = players;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return players;
     }
 }

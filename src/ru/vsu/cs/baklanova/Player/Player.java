@@ -7,7 +7,6 @@ import ru.vsu.cs.baklanova.Cards.CardsCombinationStatus;
 import java.util.ArrayList;
 
 public class Player {
-    //private String[] names = new String[]{"Sasha", "Alex", "Sam", "Betty", "Paul", "Katty", "Mari"};
     private boolean isNPC;
     private String name;
     private int money;
@@ -70,6 +69,13 @@ public class Player {
 
     public ArrayList<Card> getCards() {
         return cards;
+    }
+    public Card getCard(int i) throws Exception {
+        if (i > 0 && i < cardsNumber - 1) {
+            return cards.get(i);
+        }
+
+        throw new Exception("Неправильный номер карты");
     }
 
     public CardsCombinationStatus getCardsStatus() {
