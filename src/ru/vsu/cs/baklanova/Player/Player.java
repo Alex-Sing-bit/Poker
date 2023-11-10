@@ -7,7 +7,7 @@ import ru.vsu.cs.baklanova.Cards.CardsCombinationStatus;
 import java.util.ArrayList;
 
 public class Player {
-    private boolean isNPC;
+    private final boolean isNPC;
     private String name;
     private int money;
     private int bet;
@@ -22,15 +22,19 @@ public class Player {
         setName();
         this.isNPC = isNPC;
         setMoney(10000);
-        setBet(100);
+        setBet(0);
         this.isInGame = true;
         this.cardsStatus = null;
         setCards(main);
     }
 
+    public void setCardsStatus(CardsCombinationStatus cardsStatus) {
+        this.cardsStatus = cardsStatus;
+    }
+
     public void setCards(CardBlock main) throws Exception {
         if (main == null) {
-            //ERROR
+            throw new Exception("Колода пустая. Игрок не может взять карту.");
         }
         ArrayList <Card> cards = new ArrayList<>();
         for (int i = 0; i < cardsNumber; i++) {
@@ -40,11 +44,11 @@ public class Player {
         this.cards = cards;
     }
 
-    public void setBet(int bet) {
-        if (bet > 0) {
-            this.bet = bet;
+    public void setBet(int bet) throws Exception {
+        if (bet < 0) {
+            throw new Exception("Попытка назначить отрицательную ставку.");
         }
-        //ERROR
+        this.bet = bet;
     }
 
     public void setMoney(int money) {
@@ -59,7 +63,7 @@ public class Player {
         this.name = arr[(int) (Math.random()* arr.length)].name();
     }
 
-    public void setCardsStatus(CardsCombinationStatus cardsStatus) {
+    public void setCombinationStatus(CardsCombinationStatus cardsStatus) {
         this.cardsStatus = cardsStatus;
     }
 

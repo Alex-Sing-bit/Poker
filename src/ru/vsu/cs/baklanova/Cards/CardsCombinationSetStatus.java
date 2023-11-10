@@ -26,12 +26,13 @@ public class CardsCombinationSetStatus {
         if (tableSize > 0) {
             for (int i = 0; i < size; i++) {
                 if (i > tableSize - 1) {
-                    card = player.get((i + tableSize) % (tableSize - 1) - 1);
+                    card = player.get(i % tableSize);
+                    if (card.getCardValue() > max)
+                        max = card.getCardValue();
                 } else {
                     card = table.get(i);
                 }
-                if (card.getCardValue() > max)
-                    max = card.getCardValue();
+
                 matrix[card.getCardValue()][card.getCardSuit().getCount()] += 1;
             }
         } else {
@@ -149,7 +150,8 @@ public class CardsCombinationSetStatus {
         for (int i = startK; i < matrix.length; i++) {
             boolean next = false;
             for (int j = 0; j < matrix[0].length; j++) {
-                if (matrix[j][i] > 0) {
+                if (matrix[i][j] > 0) {
+                    //ВОЗМОЖНО ПРОБЛЕМА ТУТ
                     next = true;
                     break;
                 }
