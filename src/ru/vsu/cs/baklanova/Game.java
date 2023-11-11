@@ -40,46 +40,54 @@ public class Game {
     }
 
     public void gameRound() throws Exception {
+        System.out.println("THE START");
         int k = 0;
-        while (!gameOver()) {
+        while (gameOver() < 0) {
             oneRound();
             k++;
-            if (k > 50) {
-                break;
-            }
         }
+
+
+        System.out.println("WINNER " + players.get(gameOver()).getName());
+        System.out.println("THE END. Rounds: " + k);
     }
 
     public void oneRound() throws Exception {
         preparationToNewRound();
 
-        int roundOver = roundOver();
+        int roundOver;
         ArrayList<Integer> winners = new ArrayList<>();
 
         while (winners.size() == 0) {
-            if (circle < 0 || circle > 4) {
-                circle = 0;
-                lastBet = 100;
-            } else
-            if (circle > 0) {
-                lastBet = 0;
-                if (circle == 1) {
-                    table.setTableCards(block, 3);
-                } else if (circle == 2 || circle == 3) {
-                    table.getTableCards().add(block.takeCard());
+            if (circle != 0) {
+                if (circle < 0 || circle > 3) {
+                    circle = 0;
+                    lastBet = 100;
+                } else {
+                    if (circle != 0) {
+                        lastBet = 0;
+                    }
+                    if (circle == 1) {
+                        table.setTableCards(block, 3);
+                    } else if (circle == 2 || circle == 3) {
+                        table.getTableCards().add(block.takeCard());
+                    }
                 }
             }
 
-            output();
+            //output();
 
             final int BET_CIRCLES_NUM = 3;
             boolean stopBet;
+            int onePlayerHere = -1;
             for (int i = 0; i < BET_CIRCLES_NUM; i++) {
                 System.out.println("Это " + (i + 1) + " круг ставок.");
                 stopBet = betCircle();
-                if (stopBet) {
+                onePlayerHere = hereOnlyOneWorkablePlayers();
+                if (stopBet || onePlayerHere != -1) {
                     break;
                 }
+
                 roundOver = roundOver();
 
                 if (roundOver != -1) {
@@ -87,30 +95,43 @@ public class Game {
                 }
             }
 
-            //roundOver = roundOver();
+            output();
 
-            //output();
+            /*if (onePlayerHere != -1 ) {
+                System.out.println("Это был onePlayerHere()");
+                winners.add(onePlayerHere);
+                break;
+            }*/
+
+
+            roundOver = roundOver();
 
             if (roundOver > -1) {
+                System.out.println("Это был RoundOver()");
                 winners.add(roundOver);
-            }else if (roundOver == -2) {
+            } else if (roundOver == -2) {
                 System.out.println("Все проиграли"); //Найти решения, если победителя нет
                 break;
-            } else {
-                System.out.println("Это не конец");
+            } else if (circle > 3) {
+                System.out.println("Это был последний круг.");
+                winners.addAll(cardsOnTable());
+            } else if (onePlayerHere != -1 ) {
+                System.out.println("Это был я, Марио.");
+                winners.addAll(cardsOnTable());
+                setPlayersBetsToZero();
+                break;
             }
 
-            if (circle > 3) {
-                winners.addAll(cardsOnTable());
-            }
+
+            setPlayersBetsToZero();
             circle++;
         }
 
         winnersTakeWinnings(winners);
 
-        System.out.println("oneRound, the end. Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА ");
+        /*System.out.println("oneRound, the end. Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА ");
         output();
-        System.out.println("oneRound, the end. Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА ");
+        System.out.println("oneRound, the end. Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА ");*/
     }
 
     private void tableOutput() {
@@ -188,6 +209,8 @@ public class Game {
         } else {
             playersSetCombinationStatus(players, table);
         }
+
+        //Здесь сохранение статуса игрока
         int thisFirstBet = -1;
         int thisLastBet = -1;
 
@@ -203,7 +226,7 @@ public class Game {
                 if (nc > -1 && k == 0) {
                     thisFirstBet = nc;
                     k = 1;
-                } else if (k == 1 && nc != -1) {
+                } else if (k == 1 && nc > -1) {
                     thisLastBet = nc;
                 }
             }
@@ -212,7 +235,6 @@ public class Game {
 
         return thisFirstBet == thisLastBet && thisFirstBet != -1;
     }
-    //После вызова прибавлять круг_счетчик
 
     private int npcChoice(Player p, int i) throws Exception {
         if (p.getCardsStatus() == null) {
@@ -221,11 +243,13 @@ public class Game {
         int money = p.getMoney();
         int bet = p.getBet();
 
-        int choice = (int) (Math.random() * 99) + 1;
-        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5 + p.getCardsStatus().getMax() + 30;
-        if (choice < notGiveUp * 2 || (i < 2 && circle == 0)) {
-            if (money < lastBet) {
-                if (choice >= notGiveUp) {
+        int choice = (int) (Math.random() * 100);
+
+        final int COEF = 40;
+        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5 + p.getCardsStatus().getMax() + COEF;
+        if (choice < notGiveUp  || (i < 2 && circle == 0)) {
+            if (money + bet < lastBet + (4 - circle) * 5) {
+                if (choice < notGiveUp - COEF) {
                     p.setInGame(false);
                     System.out.println(p.getName() + " сдался.\n");
                     return -1;
@@ -233,19 +257,19 @@ public class Game {
                 p.setBet(bet + money);
                 p.setMoney(0);
                 table.setBigBet(table.getBigBet() + money);
-                System.out.println(p.getName() + " ставит всё: +" + money + "(Всего: " + p.getBet() + ")\n");
+                System.out.println(p.getName() + " ставит всё: " + p.getBet() + "\n");
                 return lastBet;
             }
 
-            if (choice < notGiveUp + circle * 10) {
-                int k = (int) (Math.random() * (money - lastBet) * (choice/100.0));;
+            if (choice < notGiveUp + circle * 5) {
+                int k = (int) (Math.random() * (money + bet - lastBet) * (choice/100.0)) / 2;
                 lastBet += k;
             }
 
-            p.setBet(bet + lastBet);
-            p.setMoney(p.getMoney() - lastBet);
-            table.setBigBet(table.getBigBet() + lastBet);
-            System.out.println(p.getName() + " ставит +"  + lastBet + " (Всего: " + p.getBet() + ")\n");
+            p.setBet(lastBet);
+            p.setMoney(p.getMoney() + bet - lastBet);
+            table.setBigBet(table.getBigBet() + lastBet - bet);
+            System.out.println(p.getName() + " ставит "  + lastBet + "\n");
 
             return lastBet;
         }
@@ -271,26 +295,54 @@ public class Game {
     }
 
     private ArrayList<Integer> cardsOnTable() throws Exception {
-        int winner = -1;
-        int maxStatus = -1;
-        int winnerMaxCard = -1;
+        Player p = players.get(0);
+        int winner = 0;
+
 
         ArrayList<Integer> winners = new ArrayList<>();
 
-        for (int i = 0; i < players.size(); i++) {
-            CardsCombinationStatus c = players.get(i).getCardsStatus();
+        for (int i = 1; i < players.size(); i++) {
+            Player thisP = players.get(i);
+            if (!thisP.getInGame()) {
+                continue;
+            }
+            CardsCombinationStatus c = thisP.getCardsStatus();
             int statusC = c.getStatus().getCount();
-            if (maxStatus < statusC) {
-                maxStatus = statusC;
+
+            CardsCombinationStatus last = p.getCardsStatus();
+            int statusLast = last.getStatus().getCount();
+
+            if (statusLast > statusC) {
+                continue;
+            } else if (statusLast < statusC) {
+                winners.clear();
+                p = players.get(i);
                 winner = i;
-                winnerMaxCard = c.getMax();
-            } else if (maxStatus == statusC) {
-                if (winnerMaxCard < c.getMax()) {
-                    winner = i;
-                    winnerMaxCard = c.getMax();
-                } else if (winnerMaxCard == c.getMax()) {
-                    winners.add(i);
+                continue;
+            }
+
+            if (last.getMax() > c.getMax()) {
+                continue;
+            } else if (last.getMax() < c.getMax()) {
+                winners.clear();
+                p = thisP;
+                winner = i;
+                continue;
+            }
+
+            int pSum = p.getCards().get(0).getCardValue() + p.getCards().get(1).getCardValue();
+
+            Player thisOne = players.get(i);
+            int thisSum = thisOne.getCards().get(0).getCardValue() + thisOne.getCards().get(1).getCardValue();
+
+            if (pSum <= thisSum) {
+                if (pSum == thisSum) {
+                    winners.add(winner);
+                } else {
+                    winners.clear();
                 }
+                p = thisOne;
+                winner = i;
             }
         }
 
@@ -303,17 +355,20 @@ public class Game {
     //Функция вероятности не сбросить карты
     //45% + Статус * 5%
 
-    private boolean gameOver() {
+    private int gameOver() {
         int k = 0;
-        for (Player p : players) {
+        int lastI = -1;
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
             if (p.getMoney() > 0) {
                 k++;
+                lastI = i;
             }
             if (k > 1) {
-                return false;
+                return -1;
             }
         }
-        return true;
+        return lastI;
     }
 
     private int roundOver() {
@@ -321,7 +376,7 @@ public class Game {
         int iWinner = -1;
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
-            if (p.getInGame()) {
+            if (p.getInGame() && (p.getBet() > 0 || p.getMoney() > 0)) {
                 k++;
                 iWinner = i;
             }
@@ -340,15 +395,43 @@ public class Game {
         this.table = table;
     }
 
-    public void setPlayersToNewCircle() throws Exception {
+    private void setPlayersToNewCircle() throws Exception {
         for (Player p : players) {
             if (p.getMoney() > 0) {
                 p.setInGame(true);
+            } else {
+                p.setInGame(false);
             }
             p.setCards(block);
             p.setBet(0);
             p.setCardsStatus(null);
         }
+    }
+
+    private void setPlayersBetsToZero() throws Exception {
+        for (Player p : players) {
+            p.setBet(0);
+        }
+    }
+
+    private int hereOnlyOneWorkablePlayers() {
+        int n = 0;
+        int lastI = -1;
+        for (int i = 0; i < players.size(); i++) {
+            Player p = players.get(i);
+            if (p.getInGame() && p.getMoney() > 0) {
+                n++;
+                lastI = i;
+            }
+            if (n > 1) {
+                return -1;
+            }
+        }
+
+       if (n == 1) {
+           return lastI;
+       }
+       return -1;
     }
 
     public void setBlockToNewCircle() throws Exception {
@@ -358,6 +441,9 @@ public class Game {
     }
 
     public void setPlayers(CardBlock main, int playersNum, int npcNum) throws Exception {
+        if (playersNum > 23) {
+            throw new Exception("Превышен лимит игроков");
+        }
         ArrayList<Player> players = new ArrayList<>();
         boolean isNPC = false;
         int k = 0;
@@ -381,6 +467,16 @@ public class Game {
 
 //++ Оба сдаются в одном круге ставок --> Оба проиграли !! Исправить
 
-// 2/3 игроков true, у второго из них закончились деньги --> первый доигрывает круг ставок один !!
+// ++ 2/3 игроков true, у второго из них закончились деньги --> первый доигрывает круг ставок один !!
 // Исправить: Если у всех true нет денег - остановиться.
 // Добавить проверку на количество людей с деньгами среди true игроков
+
+//++ Повышать, а не добавлять, ставку
+
+//++ Каждый круг не обновлять ставки стола, а объединять с прошлым кругом
+
+//++ Проверка значения второй карты
+
+//На третьем круге ставок последний игрок может повысить (это не имеет смысла и только мешает)
+
+//Две пары на столе, у игрока нет, проверка

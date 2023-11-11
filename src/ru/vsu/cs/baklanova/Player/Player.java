@@ -21,7 +21,7 @@ public class Player {
     public Player(CardBlock main, boolean isNPC) throws Exception {
         setName();
         this.isNPC = isNPC;
-        setMoney(10000);
+        setMoney(1000);
         setBet(0);
         this.isInGame = true;
         this.cardsStatus = null;

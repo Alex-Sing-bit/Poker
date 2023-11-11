@@ -75,7 +75,7 @@ public class Program {
         }
         else {
             if (params.first) {
-                Game mainGame = new Game(false, 3);
+                Game mainGame = new Game(false, 6);
                 /*for (Player player : mainGame.getPlayers()) {
                     System.out.println("NAME: " + player.getName());
                     System.out.println("MONEY: " + player.getMoney());
