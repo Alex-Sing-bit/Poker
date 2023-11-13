@@ -7,24 +7,37 @@ import ru.vsu.cs.baklanova.Cards.CardsCombinationStatus;
 import ru.vsu.cs.baklanova.Player.Player;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Game {
+    private int riskRatio;
+    public Stack<GameEvent> stack = new Stack<>();
     private final CardBlock block;
     private Table table;
     private ArrayList<Player> players;
 
     private int lastBet;
 
-    int circle;
+    private int round;
 
-    public Game(boolean haveRealPlayer, int playersNum) throws Exception {
+    private final int BET_CIRCLES_NUM = 3;
+
+    public Game(boolean haveRealPlayer, int playersNum, int coef) throws Exception {
         this.block = new CardBlock(52);
         this.table = new Table(block);
         int k = (haveRealPlayer ? 1 : 0);
         setPlayers(block, playersNum, playersNum - k);
 
         this.lastBet = 0;
-        this.circle = 0;
+        this.round = 0;
+        setRiskRatio(coef);
+    }
+
+    public void setRiskRatio(int riskRatio) {
+        if (riskRatio < 0 || riskRatio > 100) {
+            riskRatio = 50;
+        }
+        this.riskRatio = riskRatio;
     }
 
     public Table getTable() {
@@ -35,103 +48,92 @@ public class Game {
         return block;
     }
 
-    private void setCircle(int circle) {
-        this.circle = circle;
+    private void setRound(int round) {
+        this.round = round;
     }
 
-    public void gameRound() throws Exception {
-        System.out.println("THE START");
+    public void gameStart() throws Exception {
         int k = 0;
-        while (gameOver() < 0) {
-            oneRound();
+        boolean stop = false;
+        while (gameOver() < 0 && !stop) {
+            stop = oneRound();
             k++;
         }
+        stack.push(new GameEvent(GameEventEnum.ALL_UPDATE, players, -1, table));
 
+        System.out.println(k);
 
-        System.out.println("WINNER " + players.get(gameOver()).getName());
-        System.out.println("THE END. Rounds: " + k);
+        stack.push(new GameEvent(GameEventEnum.WINNER, players, gameOver(), table));
+        stack.push(new GameEvent(GameEventEnum.END, players, -1, table));
     }
 
-    public void oneRound() throws Exception {
+    public boolean oneRound() throws Exception {
         preparationToNewRound();
+       /*if (!preparationToNewRound()) {
+            return false;
+        }*/
+        stack.push(new GameEvent(GameEventEnum.ALL_UPDATE, players, -1, table));
 
-        int roundOver;
+        boolean roundOver = false;
         ArrayList<Integer> winners = new ArrayList<>();
 
         while (winners.size() == 0) {
-            if (circle != 0) {
-                if (circle < 0 || circle > 3) {
-                    circle = 0;
+            if (round != 0) {
+                if (round < 0 || round > 3) {
+                    round = 0;
                     lastBet = 100;
                 } else {
-                    if (circle != 0) {
-                        lastBet = 0;
-                    }
-                    if (circle == 1) {
+                    lastBet = 0;
+                    if (round == 1) {
                         table.setTableCards(block, 3);
-                    } else if (circle == 2 || circle == 3) {
+                        stack.push(new GameEvent(GameEventEnum.TABLE_CARDS_UPDATE, players, -1, table));
+                    } else {
                         table.getTableCards().add(block.takeCard());
+                        stack.push(new GameEvent(GameEventEnum.TABLE_CARDS_UPDATE, players, -1, table));
                     }
                 }
+            } else {
+                table.setTableCards(block, 0);
+                stack.push(new GameEvent(GameEventEnum.TABLE_CARDS_UPDATE, players, -1, table));
             }
 
-            //output();
-
-            final int BET_CIRCLES_NUM = 3;
             boolean stopBet;
-            int onePlayerHere = -1;
+
             for (int i = 0; i < BET_CIRCLES_NUM; i++) {
                 System.out.println("Это " + (i + 1) + " круг ставок.");
-                stopBet = betCircle();
-                onePlayerHere = hereOnlyOneWorkablePlayers();
-                if (stopBet || onePlayerHere != -1) {
-                    break;
-                }
-
-                roundOver = roundOver();
-
-                if (roundOver != -1) {
+                stopBet = betCircle(i);
+                //roundOver = roundOver();
+                if (stopBet) {// || roundOver) {
                     break;
                 }
             }
 
+            stack.push(new GameEvent(GameEventEnum.PERSON_BET, players, -1, table));
             output();
-
-            /*if (onePlayerHere != -1 ) {
-                System.out.println("Это был onePlayerHere()");
-                winners.add(onePlayerHere);
-                break;
-            }*/
-
 
             roundOver = roundOver();
 
-            if (roundOver > -1) {
-                System.out.println("Это был RoundOver()");
-                winners.add(roundOver);
-            } else if (roundOver == -2) {
-                System.out.println("Все проиграли"); //Найти решения, если победителя нет
-                break;
-            } else if (circle > 3) {
-                System.out.println("Это был последний круг.");
+            if (roundOver || round > 2) {
+                if (roundOver) {
+                    System.out.println("Это был RoundOver()");
+                } else {
+                    System.out.println("Это был последний круг.");
+                }
                 winners.addAll(cardsOnTable());
-            } else if (onePlayerHere != -1 ) {
-                System.out.println("Это был я, Марио.");
-                winners.addAll(cardsOnTable());
-                setPlayersBetsToZero();
-                break;
+                if (winners.size() == 0) {
+                    break;
+                }
             }
 
 
             setPlayersBetsToZero();
-            circle++;
+            round++;
         }
 
-        winnersTakeWinnings(winners);
-
-        /*System.out.println("oneRound, the end. Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА ");
-        output();
-        System.out.println("oneRound, the end. Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА Я ПРОВЕРКА ");*/
+        if (winners.size() > 0) {
+            winnersTakeWinnings(winners);
+        }
+        return true;
     }
 
     private void tableOutput() {
@@ -164,7 +166,7 @@ public class Game {
     }
 
     private void output() {
-        System.out.println(circle);
+        System.out.println(round);
         System.out.println();
         tableOutput();
         playerOutput();
@@ -176,26 +178,24 @@ public class Game {
             winning = winning / winnersSize;
         }
 
-        if (winnersSize >= 1) {
-            for (Integer i : winnersIndexes) {
-                takeWinning(i, winning);
-                System.out.println(players.get(i).getName() + " победил!");
-            }
-        } else {
-            for (int i = 0; i < players.size(); ) {
-                takeWinning(i, winning);
-            }
+        for (Integer i : winnersIndexes) {
+            takeWinning(i, winning);
+
+            stack.push(new GameEvent(GameEventEnum.ROUND_WINNER, players, i, table));
+            System.out.println(players.get(i).getName() + " победил!");
         }
     }
-    private void preparationToNewRound() throws Exception {
+    private boolean preparationToNewRound() throws Exception {
         setBlockToNewCircle();
-        setPlayersToNewCircle();
+        int k = setPlayersToNewCircle();
 
         table.setBigBet(0);
         table.setTableCards(block, 0);
 
-        circle = 0;
+        round = 0;
         lastBet = 100;
+
+        return !(k > 0);
     }
 
     private void takeWinning(int i, int winning) {
@@ -203,8 +203,8 @@ public class Game {
         p.setMoney(p.getMoney() + winning);
     }
 
-    private boolean betCircle() throws Exception {
-        if (circle == 0) {
+    private boolean betCircle(int circle) throws Exception {
+        if (round == 0) {
             playersSetCombinationStatus(players, null);
         } else {
             playersSetCombinationStatus(players, table);
@@ -215,14 +215,14 @@ public class Game {
         int thisLastBet = -1;
 
         int k = 0;
-        int roundOver = roundOver();
-        for (int i = 0; i < players.size() && roundOver == -1; i++) {
+        boolean roundOver = roundOver();
+        for (int i = 0; i < players.size() && !roundOver; i++) {
             Player p = players.get(i);
             if (p.getMoney() <= 0 || !p.getInGame()) {
                 continue;
             }
             if (p.getIsNPC()) {
-                int nc = npcChoice(p, i);
+                int nc = npcChoice(circle, i);
                 if (nc > -1 && k == 0) {
                     thisFirstBet = nc;
                     k = 1;
@@ -233,35 +233,47 @@ public class Game {
             roundOver = roundOver();
         }
 
-        return thisFirstBet == thisLastBet && thisFirstBet != -1;
+        return (thisFirstBet == thisLastBet && thisFirstBet != -1) || roundOver;
     }
 
-    private int npcChoice(Player p, int i) throws Exception {
+    private int npcChoice(int circle, int playerIndex) throws Exception {
+        Player p = players.get(playerIndex);
         if (p.getCardsStatus() == null) {
             return -1;
         }
         int money = p.getMoney();
         int bet = p.getBet();
 
+        if (money == 0 && bet == 0) {
+            p.setInGame(false);
+            stack.push(new GameEvent(GameEventEnum.PERSON_BET, players, playerIndex, table));
+            return -1;
+        }
+
         int choice = (int) (Math.random() * 100);
 
-        final int COEF = 40;
-        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5 + p.getCardsStatus().getMax() + COEF;
-        if (choice < notGiveUp  || (i < 2 && circle == 0)) {
-            if (money + bet < lastBet + (4 - circle) * 5) {
-                if (choice < notGiveUp - COEF) {
+        int notGiveUp = p.getCardsStatus().getStatus().getCount() * 5 + p.getCardsStatus().getMax() + riskRatio;
+        if (choice < notGiveUp  || (playerIndex < 2 && round == 0)) {
+            if (money + bet < lastBet + (4 - round) * 5) {
+                if (choice < notGiveUp - riskRatio) {
                     p.setInGame(false);
+
+                    stack.push(new GameEvent(GameEventEnum.PERSON_BET, players, playerIndex, table));
                     System.out.println(p.getName() + " сдался.\n");
+
                     return -1;
                 }
                 p.setBet(bet + money);
                 p.setMoney(0);
                 table.setBigBet(table.getBigBet() + money);
+
+                stack.push(new GameEvent(GameEventEnum.PERSON_BET, players, playerIndex, table));
                 System.out.println(p.getName() + " ставит всё: " + p.getBet() + "\n");
+
                 return lastBet;
             }
 
-            if (choice < notGiveUp + circle * 5) {
+            if (choice < notGiveUp + round * 5 && (circle < BET_CIRCLES_NUM - 1 || playerIndex == 0)) { //Если 3 круг ставок и не 0 игрок, то не входим
                 int k = (int) (Math.random() * (money + bet - lastBet) * (choice/100.0)) / 2;
                 lastBet += k;
             }
@@ -269,19 +281,19 @@ public class Game {
             p.setBet(lastBet);
             p.setMoney(p.getMoney() + bet - lastBet);
             table.setBigBet(table.getBigBet() + lastBet - bet);
+
+            stack.push(new GameEvent(GameEventEnum.PERSON_BET, players, playerIndex, table));
             System.out.println(p.getName() + " ставит "  + lastBet + "\n");
 
             return lastBet;
         }
 
+        stack.push(new GameEvent(GameEventEnum.PERSON_BET, players, playerIndex, table));
         System.out.println(p.getName() + " сдался.\n");
+
         p.setInGame(false);
 
         return -1;
-        //ЕСЛИ (рандомное число * 100) < вероятность не сбросить карты(внск)
-        //ЕСЛИ рандомное число < внск, ТО повысить ставку на ранд(100 : баланс, <= баланс);
-        //Для обоих - статус в игре
-        //ИНАЧЕ сбросить карты
     }
 
     private static void playersSetCombinationStatus(ArrayList<Player> players, Table table) throws Exception {
@@ -295,9 +307,10 @@ public class Game {
     }
 
     private ArrayList<Integer> cardsOnTable() throws Exception {
-        Player p = players.get(0);
-        int winner = 0;
+        Player p = new Player(block, true, 0, 0);
+        int winner = -1;
 
+        stack.push(new GameEvent(GameEventEnum.CARDS_ON_TABLE, players, -1, table));
 
         ArrayList<Integer> winners = new ArrayList<>();
 
@@ -346,7 +359,13 @@ public class Game {
             }
         }
 
+        if (winner == -1) {
+            return winners;
+        }
         winners.add(winner);
+        for (int i = 0; i < winners.size(); i++) {
+            stack.push(new GameEvent(GameEventEnum.ROUND_WINNER, players, i, table));
+        }
         return winners;
     }
     //Победитель получает общую ставку со стола, на столе она становится 0, обновление статусов
@@ -371,41 +390,39 @@ public class Game {
         return lastI;
     }
 
-    private int roundOver() {
+    private boolean roundOver() {
         int k = 0;
-        int iWinner = -1;
-        for (int i = 0; i < players.size(); i++) {
-            Player p = players.get(i);
-            if (p.getInGame() && (p.getBet() > 0 || p.getMoney() > 0)) {
+        for (Player p : players) {
+            if (p.getInGame() && (p.getMoney() > 0)) {
                 k++;
-                iWinner = i;
             }
             if (k > 1) {
-                return -1;
+                return false;
             }
         }
 
-        if (k == 1) {
-            return iWinner;
-        }
-        return -2;
+        return true;
     }
 
     private void setTable(Table table) {
         this.table = table;
     }
 
-    private void setPlayersToNewCircle() throws Exception {
+    private int setPlayersToNewCircle() throws Exception {
+        int k = 0;
         for (Player p : players) {
             if (p.getMoney() > 0) {
                 p.setInGame(true);
             } else {
+                k++;
                 p.setInGame(false);
             }
             p.setCards(block);
             p.setBet(0);
             p.setCardsStatus(null);
         }
+
+        return k;
     }
 
     private void setPlayersBetsToZero() throws Exception {
@@ -441,7 +458,7 @@ public class Game {
     }
 
     public void setPlayers(CardBlock main, int playersNum, int npcNum) throws Exception {
-        if (playersNum > 23) {
+        if (playersNum > 8) {
             throw new Exception("Превышен лимит игроков");
         }
         ArrayList<Player> players = new ArrayList<>();
@@ -477,6 +494,10 @@ public class Game {
 
 //++ Проверка значения второй карты
 
-//На третьем круге ставок последний игрок может повысить (это не имеет смысла и только мешает)
+//++На третьем круге ставок последний игрок может повысить (это не имеет смысла и только мешает)
 
-//Две пары на столе, у игрока нет, проверка
+//**Две пары на столе, у игрока нет, проверка
+
+//Все проиграли <-- у всех активных игроков нет денег
+
+//Сдавшийся запоминает в себе сумму на столе до того, как он сдался

@@ -7,5 +7,11 @@ public enum PlayerEnum {
     BETTY,
     PAUL,
     KATTY,
-    MARI
+    MARI,
+    FIONA,
+    CARL,
+    MASHA,
+    OLEG,
+    TIHON,
+    STEVE
 }

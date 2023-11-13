@@ -1,10 +1,8 @@
 package ru.vsu.cs.baklanova;
 
-import ru.vsu.cs.baklanova.Cards.CardBlock;
-import ru.vsu.cs.baklanova.Player.Player;
-
 import java.io.PrintStream;
 import java.util.Locale;
+import java.util.Stack;
 
 
 public class Program {
@@ -75,7 +73,7 @@ public class Program {
         }
         else {
             if (params.first) {
-                Game mainGame = new Game(false, 6);
+                Game mainGame = new Game(false, 4, 70);
                 /*for (Player player : mainGame.getPlayers()) {
                     System.out.println("NAME: " + player.getName());
                     System.out.println("MONEY: " + player.getMoney());
@@ -84,7 +82,9 @@ public class Program {
                     System.out.println();
                 }*/
 
-                mainGame.gameRound();
+                mainGame.gameStart();
+                Stack<GameEvent> events = mainGame.stack;
+                System.out.println();
             }
 
         }
