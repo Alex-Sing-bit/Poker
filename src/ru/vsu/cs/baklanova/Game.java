@@ -1,9 +1,6 @@
 package ru.vsu.cs.baklanova;
 
-import ru.vsu.cs.baklanova.Cards.Card;
-import ru.vsu.cs.baklanova.Cards.CardBlock;
-import ru.vsu.cs.baklanova.Cards.CardsCombinationSetStatus;
-import ru.vsu.cs.baklanova.Cards.CardsCombinationStatus;
+import ru.vsu.cs.baklanova.Cards.*;
 import ru.vsu.cs.baklanova.Player.Player;
 
 import java.util.ArrayList;
@@ -61,17 +58,16 @@ public class Game {
         }
         stack.push(new GameEvent(GameEventEnum.ALL_UPDATE, players, -1, table));
 
-        System.out.println(k);
+        System.out.println(k + " Победитель: " + players.get(gameOver()).getName());
 
         stack.push(new GameEvent(GameEventEnum.WINNER, players, gameOver(), table));
         stack.push(new GameEvent(GameEventEnum.END, players, -1, table));
     }
 
     public boolean oneRound() throws Exception {
-        preparationToNewRound();
-       /*if (!preparationToNewRound()) {
-            return false;
-        }*/
+        if (!preparationToNewRound()) {
+            return true;
+        }
         stack.push(new GameEvent(GameEventEnum.ALL_UPDATE, players, -1, table));
 
         boolean roundOver = false;
@@ -97,12 +93,12 @@ public class Game {
                 stack.push(new GameEvent(GameEventEnum.TABLE_CARDS_UPDATE, players, -1, table));
             }
 
-            boolean stopBet;
+            output();
+            boolean stopBet = false;
 
             for (int i = 0; i < BET_CIRCLES_NUM; i++) {
                 System.out.println("Это " + (i + 1) + " круг ставок.");
                 stopBet = betCircle(i);
-                //roundOver = roundOver();
                 if (stopBet) {// || roundOver) {
                     break;
                 }
@@ -112,8 +108,8 @@ public class Game {
             output();
 
             roundOver = roundOver();
-
-            if (roundOver || round > 2) {
+            //int wp = hereOnlyOneWorkablePlayers();
+            if (roundOver || stopBet || round > 2) {
                 if (roundOver) {
                     System.out.println("Это был RoundOver()");
                 } else {
@@ -133,7 +129,7 @@ public class Game {
         if (winners.size() > 0) {
             winnersTakeWinnings(winners);
         }
-        return true;
+        return false;
     }
 
     private void tableOutput() {
@@ -195,7 +191,7 @@ public class Game {
         round = 0;
         lastBet = 100;
 
-        return !(k > 0);
+        return !(players.size() - k <= 1);
     }
 
     private void takeWinning(int i, int winning) {
@@ -308,35 +304,36 @@ public class Game {
 
     private ArrayList<Integer> cardsOnTable() throws Exception {
         Player p = new Player(block, true, 0, 0);
+        p.setCardsStatus(new CardsCombinationStatus(CardsCombinationStatusEnum.HIGH_CARD, 1));
         int winner = -1;
 
         stack.push(new GameEvent(GameEventEnum.CARDS_ON_TABLE, players, -1, table));
 
         ArrayList<Integer> winners = new ArrayList<>();
 
-        for (int i = 1; i < players.size(); i++) {
+        for (int i = 0; i < players.size(); i++) {
             Player thisP = players.get(i);
             if (!thisP.getInGame()) {
                 continue;
             }
-            CardsCombinationStatus c = thisP.getCardsStatus();
+            CardsCombinationStatus c = p.getCardsStatus();
             int statusC = c.getStatus().getCount();
 
-            CardsCombinationStatus last = p.getCardsStatus();
+            CardsCombinationStatus last = thisP.getCardsStatus();
             int statusLast = last.getStatus().getCount();
 
-            if (statusLast > statusC) {
+            if (statusLast < statusC) {
                 continue;
-            } else if (statusLast < statusC) {
+            } else if (statusLast > statusC) {
                 winners.clear();
-                p = players.get(i);
+                p = thisP;
                 winner = i;
                 continue;
             }
 
-            if (last.getMax() > c.getMax()) {
+            if (last.getMax() < c.getMax()) {
                 continue;
-            } else if (last.getMax() < c.getMax()) {
+            } else if (last.getMax() > c.getMax()) {
                 winners.clear();
                 p = thisP;
                 winner = i;
@@ -345,16 +342,15 @@ public class Game {
 
             int pSum = p.getCards().get(0).getCardValue() + p.getCards().get(1).getCardValue();
 
-            Player thisOne = players.get(i);
-            int thisSum = thisOne.getCards().get(0).getCardValue() + thisOne.getCards().get(1).getCardValue();
+            int thisSum = thisP.getCards().get(0).getCardValue() + thisP.getCards().get(1).getCardValue();
 
-            if (pSum <= thisSum) {
-                if (pSum == thisSum) {
+            if (thisSum >= pSum) {
+                if (pSum == thisSum && winner >= 0) {
                     winners.add(winner);
-                } else {
+                } else if (pSum < thisSum) {
                     winners.clear();
                 }
-                p = thisOne;
+                p = thisP;
                 winner = i;
             }
         }
@@ -433,22 +429,19 @@ public class Game {
 
     private int hereOnlyOneWorkablePlayers() {
         int n = 0;
-        int lastI = -1;
+        int lastI  = -1;
         for (int i = 0; i < players.size(); i++) {
             Player p = players.get(i);
             if (p.getInGame() && p.getMoney() > 0) {
-                n++;
                 lastI = i;
+                n++;
             }
             if (n > 1) {
                 return -1;
             }
         }
 
-       if (n == 1) {
-           return lastI;
-       }
-       return -1;
+        return lastI;
     }
 
     public void setBlockToNewCircle() throws Exception {
